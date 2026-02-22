@@ -556,8 +556,7 @@ type GetAnimationsFromMultiDriver<T> = T extends {
 type ExtractDriver<T> = Extract<T, AnimationDriver<any>>;
 type InferredTransitionKeys = ExtractDriver<TamaguiConfig['animations']> extends AnimationDriver<any> ? GetAnimationsFromDriver<ExtractDriver<TamaguiConfig['animations']>> : GetAnimationsFromMultiDriver<TamaguiConfig['animations']>;
 export type TransitionKeys = InferredTransitionKeys;
-type InferredAnimationDriverKeys = string extends TamaguiConfig['animationDriverKeys'] ? 'default' : TamaguiConfig['animationDriverKeys'] extends string ? TamaguiConfig['animationDriverKeys'] : 'default';
-export type AnimationDriverKeys = 'default' | InferredAnimationDriverKeys | (ReturnType<TypeOverride['animationDrivers']> extends 1 ? never : ReturnType<TypeOverride['animationDrivers']>);
+export type AnimationDriverKeys = 'default' | Extract<Exclude<TamaguiConfig['animationDriverKeys'], undefined>, string> | (ReturnType<TypeOverride['animationDrivers']> extends 1 ? never : ReturnType<TypeOverride['animationDrivers']>);
 export type FontLanguages = ArrayIntersection<TamaguiConfig['fontLanguages']>;
 export interface ThemeProps {
     className?: string;
@@ -822,6 +821,7 @@ export type TamaguiInternalConfig<A extends GenericTokens = GenericTokens, B ext
     settings: Omit<GenericTamaguiSettings, keyof G> & G;
     defaultFont?: string;
     defaultFontToken: `${string}`;
+    animationDrivers?: Record<string, AnimationDriver>;
 };
 export type GetAnimationKeys<A extends GenericTamaguiConfig> = keyof A['animations'];
 export type UnionableString = string & {};
@@ -1575,6 +1575,7 @@ export type GetStyleState = {
     overriddenContextProps?: Record<string, any>;
     originalContextPropValues?: Record<string, any>;
     pseudoTransitions?: PseudoTransitions | null;
+    animationDriver?: AnimationDriver | null;
 };
 export type StyleResolver<Response = PropMappedValue> = (key: string, value: any, props: SplitStyleProps, state: GetStyleState, parentVariantKey: string) => Response;
 export type PropMapper = (key: string, value: any, state: GetStyleState, disabled: boolean, map: (key: string, val: any, originalVal?: any) => void) => void;

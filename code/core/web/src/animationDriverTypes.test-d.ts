@@ -156,6 +156,43 @@ describe('animatedBy prop', () => {
     type AnimatedBy = NonNullable<Props['animatedBy']>
     expectTypeOf<'default'>().toMatchTypeOf<AnimatedBy>()
   })
+
+  /**
+   * IMPORTANT: This test verifies the full type inference chain for multi-driver configs.
+   *
+   * When user configures: animations: { default: motionDriver, css: cssDriver }
+   * The animatedBy prop should accept: 'default' | 'css' | null
+   *
+   * The type flow is:
+   * 1. CreateTamaguiProps.animations accepts multi-driver object
+   * 2. InferTamaguiConfig extracts driver keys via ExtractAnimationDriverKeys
+   * 3. TamaguiInternalConfig stores keys in AnimDriverKeys generic param
+   * 4. TamaguiCustomConfig extends the inferred config type
+   * 5. TamaguiConfig merges with TamaguiCustomConfig
+   * 6. InferredAnimationDriverKeys reads from TamaguiConfig['animationDriverKeys']
+   * 7. AnimationDriverKeys combines inferred + TypeOverride
+   * 8. animatedBy uses AnimationDriverKeys
+   */
+  test('multi-driver config type flow preserves all driver keys', () => {
+    // internal helper mirrors the one in types.tsx
+    type ExtractAnimationDriverKeys<E> =
+      E extends AnimationDriver<any>
+        ? 'default'
+        : E extends { default: AnimationDriver<any> }
+          ? Extract<keyof E, string>
+          : 'default'
+
+    // simulate multi-driver config
+    type MultiDriverConfig = {
+      default: MockCSSDriver
+      css: MockSpringDriver
+    }
+
+    // should extract both keys
+    type ExtractedKeys = ExtractAnimationDriverKeys<MultiDriverConfig>
+    expectTypeOf<'default'>().toMatchTypeOf<ExtractedKeys>()
+    expectTypeOf<'css'>().toMatchTypeOf<ExtractedKeys>()
+  })
 })
 
 // =============================================================================

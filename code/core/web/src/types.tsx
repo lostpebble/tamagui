@@ -1000,23 +1000,18 @@ type InferredTransitionKeys =
 export type TransitionKeys = InferredTransitionKeys
 
 // Driver keys (default, css, spring) for the `animatedBy` prop
-// Uses the preserved animationDriverKeys field from CreateTamaguiConfig
-// When animationDriverKeys is exactly `string` (the default), fall back to 'default'
-// When it's a specific union like 'default' | 'css', use that union
-type InferredAnimationDriverKeys = string extends TamaguiConfig['animationDriverKeys']
-  ? 'default'
-  : TamaguiConfig['animationDriverKeys'] extends string
-    ? TamaguiConfig['animationDriverKeys']
-    : 'default'
-
-// Combine inferred keys from config with TypeOverride keys
-// This ensures both config-defined drivers AND lazy-loaded drivers are available
+// Gets driver keys directly from TamaguiConfig.animationDriverKeys
+// Falls back to 'default' only when TamaguiCustomConfig is empty (no augmentation)
+// The Exclude<X, undefined> handles optional property, then we intersect with string
+// to ensure only string keys (not symbols/numbers)
 export type AnimationDriverKeys =
   | 'default'
-  | InferredAnimationDriverKeys
+  | Extract<Exclude<TamaguiConfig['animationDriverKeys'], undefined>, string>
+  // add TypeOverride keys for lazy-loaded drivers
   | (ReturnType<TypeOverride['animationDrivers']> extends 1
       ? never
       : ReturnType<TypeOverride['animationDrivers']>)
+
 export type FontLanguages = ArrayIntersection<TamaguiConfig['fontLanguages']>
 
 export interface ThemeProps {
@@ -1354,6 +1349,9 @@ export type TamaguiInternalConfig<
     settings: Omit<GenericTamaguiSettings, keyof G> & G
     defaultFont?: string
     defaultFontToken: `${string}`
+    // multi-driver animation config (e.g., { default: motionDriver, css: cssDriver })
+    // used for component-level driver selection via animatedBy prop
+    animationDrivers?: Record<string, AnimationDriver>
   }
 
 export type GetAnimationKeys<A extends GenericTamaguiConfig> = keyof A['animations']
@@ -2752,6 +2750,8 @@ export type GetStyleState = {
   originalContextPropValues?: Record<string, any>
   // Transitions extracted from pseudo-style props (e.g., hoverStyle.transition)
   pseudoTransitions?: PseudoTransitions | null
+  // Resolved animation driver (respects animatedBy prop)
+  animationDriver?: AnimationDriver | null
 }
 
 export type StyleResolver<Response = PropMappedValue> = (

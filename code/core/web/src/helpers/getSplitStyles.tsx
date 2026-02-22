@@ -27,6 +27,7 @@ import {
 import { mediaState as globalMediaState, mediaQueryConfig } from './mediaState'
 import type {
   AllGroupContexts,
+  AnimationDriver,
   ClassNamesObject,
   ComponentContextI,
   DebugProp,
@@ -94,7 +95,9 @@ type StyleSplitter = (
   // web-only
   elementType?: string,
   startedUnhydrated?: boolean,
-  debug?: DebugProp
+  debug?: DebugProp,
+  // resolved animation driver (respects animatedBy prop)
+  animationDriver?: AnimationDriver | null
 ) => null | GetStyleResult
 
 export const PROP_SPLIT = '-'
@@ -161,10 +164,15 @@ export const getSplitStyles: StyleSplitter = (
   groupContext,
   elementType,
   startedUnhydrated,
-  debug
+  debug,
+  animationDriver
 ) => {
   conf = conf || getConfig()
-  const animationDriver = componentContext?.animationDriver || conf.animations
+  // use passed animationDriver or fall back to context/config
+  const driver =
+    animationDriver ||
+    componentContext?.animationDriver ||
+    (conf.animations as AnimationDriver)
 
   if (props.passThrough) {
     return null
@@ -174,7 +182,7 @@ export const getSplitStyles: StyleSplitter = (
   if (
     isWeb &&
     styleProps.isAnimated &&
-    animationDriver.isReactNative &&
+    driver?.isReactNative &&
     !styleProps.noNormalize
   ) {
     styleProps.noNormalize = 'values'
@@ -236,6 +244,8 @@ export const getSplitStyles: StyleSplitter = (
     viewProps,
     context: componentContext,
     debug,
+    // resolved animation driver (respects animatedBy prop)
+    animationDriver: driver,
   }
 
   // only used by compiler
@@ -1066,7 +1076,7 @@ export const getSplitStyles: StyleSplitter = (
 
       if (!styleProps.noExpand && !styleProps.noMergeStyle) {
         // shouldn't this be better? but breaks some tests weirdly, need to check
-        if (isWeb && (isReactNative ? animationDriver.inputStyle !== 'css' : true)) {
+        if (isWeb && (isReactNative ? driver?.inputStyle !== 'css' : true)) {
           styleToCSS(styleState.style)
         }
       }
@@ -1117,7 +1127,7 @@ export const getSplitStyles: StyleSplitter = (
       !styleProps.noNormalize &&
       !staticConfig.isReactNative &&
       !staticConfig.isHOC &&
-      (!styleProps.isAnimated || animationDriver.inputStyle === 'css')
+      (!styleProps.isAnimated || driver?.inputStyle === 'css')
 
     if (shouldStringifyTransforms && Array.isArray(styleState.style?.transform)) {
       styleState.style.transform = transformsToString(styleState.style!.transform) as any
@@ -1148,7 +1158,7 @@ export const getSplitStyles: StyleSplitter = (
           const nonAnimatedTransitionOnly =
             !isAnimatedAndTransitionOnly &&
             !styleProps.isAnimated &&
-            animationDriver?.outputStyle === 'css' &&
+            driver?.outputStyle === 'css' &&
             props.animateOnly?.includes(key)
 
           if (isAnimatedAndTransitionOnly) {
@@ -1286,7 +1296,7 @@ export const getSplitStyles: StyleSplitter = (
           if (style) {
             viewProps.style = style as any
           }
-          if (animationDriver?.inputStyle === 'css') {
+          if (driver?.inputStyle === 'css') {
             viewProps.className = finalClassName
           }
         } else if (isReactNative) {
@@ -1432,9 +1442,9 @@ export const getSubStyle = (
         val
       // for CSS driver, also add transition to CSS output so native CSS transitions work
       // group styles ($group-*) need !important to override inline base transition
-      const animationDriver = styleState.context?.animationDriver || conf.animations
-      if (animationDriver?.outputStyle === 'css') {
-        const animationConfig = animationDriver.animations?.[val as string]
+      const driver = styleState.animationDriver
+      if (driver?.outputStyle === 'css') {
+        const animationConfig = driver.animations?.[val as string]
         if (animationConfig) {
           const important = subKey[0] === '$' ? ' !important' : ''
           styleOut['transition'] = `all ${animationConfig}${important}`
@@ -1531,10 +1541,10 @@ const useInsertEffectCompat = isWeb
   : () => {}
 
 // perf: ...args a bit expensive on native
-export const useSplitStyles: StyleSplitter = (a, b, c, d, e, f, g, h, i, j, k, l) => {
+export const useSplitStyles: StyleSplitter = (a, b, c, d, e, f, g, h, i, j, k, l, m) => {
   'use no memo'
 
-  const res = getSplitStyles(a, b, c, d, e, f, g, h, i, j, k, l)
+  const res = getSplitStyles(a, b, c, d, e, f, g, h, i, j, k, l, m)
 
   if (process.env.TAMAGUI_TARGET !== 'native') {
     useInsertEffectCompat(() => {

@@ -29,14 +29,18 @@ export function TamaguiProvider({
   )
 
   // Get the default animation driver from config
-  // animations can be a single driver or { default: driver, ...others }
-  const defaultAnimationDriver: AnimationDriver = React.useMemo(() => {
+  // config.animations is already normalized to the default driver in createTamagui
+  const defaultAnimationDriver: AnimationDriver | null = React.useMemo(() => {
     const animations = config?.animations
     if (!animations) return null
-    if ('default' in animations) {
-      return (animations as { default: any }).default
+    // safety check for runtime: animations could still be multi-driver object if not using createTamagui
+    if (
+      'default' in animations &&
+      typeof (animations as any).default?.useAnimations === 'function'
+    ) {
+      return (animations as { default: AnimationDriver }).default
     }
-    return animations
+    return animations as AnimationDriver
   }, [config?.animations])
 
   useEffect(() => {

@@ -346,13 +346,21 @@ const tokens = {
   // },
 }
 
+// multi-driver config for testing animatedBy prop and driver selection
+const animationsMultiDriver = {
+  default: animationsMotion,
+  css: animationsCSS,
+}
+
 const animations = search.includes('animationDriver=css')
   ? animationsCSS
   : search.includes('animationDriver=native')
     ? animationsNative
     : search.includes('animationDriver=motion')
       ? animationsMotion
-      : animationsReanimated
+      : search.includes('animationDriver=multi')
+        ? animationsMultiDriver
+        : animationsReanimated
 
 const tamaConf = createTamagui({
   ...config,

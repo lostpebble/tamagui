@@ -376,20 +376,21 @@ export function createComponent<
 
     const groupContextParent = React.useContext(GroupContext)
 
-    // Get animation driver - either from animatedBy prop lookup or context
+    // Get animation driver - either from animatedBy prop lookup or context/config fallback
     const animationDriver = (() => {
-      if (props.animatedBy && config?.animations) {
-        const animations = config.animations
-        // If animations is an object with named drivers (has 'default' key)
-        if ('default' in animations) {
+      if (props.animatedBy && config) {
+        // check animationDrivers for multi-driver config
+        if (config.animationDrivers) {
           return (
-            (animations as Record<string, any>)[props.animatedBy] ?? animations.default
+            (config.animationDrivers as Record<string, any>)[props.animatedBy] ??
+            config.animations
           )
         }
-        // Single driver config - only 'default' makes sense
-        return props.animatedBy === 'default' ? animations : null
+        // single driver config - only 'default' makes sense
+        return props.animatedBy === 'default' ? config.animations : null
       }
-      return componentContext.animationDriver
+      // fall back to context driver, then config.animations
+      return componentContext.animationDriver ?? config?.animations ?? null
     })()
 
     const useAnimations = animationDriver?.useAnimations as UseAnimationHook | undefined
@@ -645,7 +646,8 @@ export function createComponent<
       allGroupContexts,
       elementType,
       startedUnhydrated,
-      debugProp
+      debugProp,
+      animationDriver
     )
 
     const isPassthrough = !splitStyles
@@ -731,7 +733,8 @@ export function createComponent<
           allGroupContexts,
           elementType,
           startedUnhydrated,
-          debugProp
+          debugProp,
+          animationDriver
         )
 
         // compute effective transition based on entering/exiting pseudo states

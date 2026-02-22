@@ -195,13 +195,30 @@ export function createTamagui<Conf extends CreateTamaguiProps>(
   // Text inherits font from root via CSS, no need for default fontFamily
   // only explicit fontFamily prop should add font_* class
 
+  // normalize multi-driver animation config to default driver
+  // supports format: { default: motionDriver, css: cssDriver }
+  // stores full config in animationDrivers for component-level selection via animatedBy
+  const inputAnimations = configIn.animations
+  // check if multi-driver: has 'default' key that is itself an animation driver (has useAnimations)
+  const isMultiDriver =
+    inputAnimations &&
+    typeof inputAnimations === 'object' &&
+    'default' in inputAnimations &&
+    typeof (inputAnimations as any).default?.useAnimations === 'function'
+  const resolvedAnimations = isMultiDriver
+    ? (inputAnimations as any).default
+    : inputAnimations
+  const animationDrivers = isMultiDriver ? inputAnimations : undefined
+
   const config: TamaguiInternalConfig = {
     fonts: {},
     onlyAllowShorthands: false,
     fontLanguages: [],
-    animations: defaultAnimationDriver,
     media: {},
     ...configIn,
+    // normalized animations (resolved from multi-driver format if needed)
+    animations: resolvedAnimations ?? defaultAnimationDriver,
+    animationDrivers,
     defaultProps,
     settings: {
       webContainerType: 'inline-size',

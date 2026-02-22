@@ -722,7 +722,14 @@ const DiscordPanel = ({
     query
       ? `/api/discord/search-member?${new URLSearchParams({ query }).toString()}`
       : null,
-    (url) => authFetch(url).then((res) => res.json())
+    async (url) => {
+      const res = await authFetch(url)
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({ error: 'Request failed' }))
+        throw new Error(error.error || error.message || 'Request failed')
+      }
+      return res.json()
+    }
   )
 
   const resetChannelMutation = useSWRMutation(
@@ -786,12 +793,16 @@ const DiscordPanel = ({
         </Paragraph>
       </XStack>
 
-      {Array.isArray(searchSwr.data) && searchSwr.data.length === 0 ? (
+      {searchSwr.error ? (
+        <Paragraph size="$3" color="$red10">
+          {searchSwr.error.message || 'Failed to search'}
+        </Paragraph>
+      ) : Array.isArray(searchSwr.data) && searchSwr.data.length === 0 ? (
         <Paragraph size="$3" color="$color10">
           No users found
         </Paragraph>
-      ) : (
-        searchSwr.data?.map((member) => (
+      ) : Array.isArray(searchSwr.data) ? (
+        searchSwr.data.map((member) => (
           <DiscordMember
             key={member.user?.id}
             member={member}
@@ -799,7 +810,7 @@ const DiscordPanel = ({
             apiType={apiType}
           />
         ))
-      )}
+      ) : null}
     </>
   )
 
