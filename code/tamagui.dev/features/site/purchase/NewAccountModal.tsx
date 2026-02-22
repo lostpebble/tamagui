@@ -14,7 +14,9 @@ import type {
   RESTGetAPIGuildMembersSearchResult,
 } from 'discord-api-types/v10'
 import { router } from 'one'
+import { useToastController } from '@tamagui/toast'
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { processError } from '~/features/posthog/errorHandling'
 import useSWR, { mutate } from 'swr'
 import useSWRMutation from 'swr/mutation'
 import {
@@ -662,6 +664,8 @@ const DiscordPanel = ({
   apiType: 'channel' | 'support'
   isTeamMember: boolean
 }) => {
+  const toast = useToastController()
+
   const hasSupportAccess = () => {
     const supportItems = subscription?.subscription_items?.filter((item) => {
       return (
@@ -722,7 +726,7 @@ const DiscordPanel = ({
     query
       ? `/api/discord/search-member?${new URLSearchParams({ query }).toString()}`
       : null,
-    async (url) => {
+    async (url: string) => {
       const res = await authFetch(url)
       if (!res.ok) {
         const error = await res.json().catch(() => ({ error: 'Request failed' }))
@@ -731,6 +735,19 @@ const DiscordPanel = ({
       return res.json()
     }
   )
+
+  useEffect(() => {
+    if (searchSwr.error) {
+      toast.show('Discord search failed', {
+        message: searchSwr.error.message || 'Could not search Discord members',
+      })
+      processError({
+        error: searchSwr.error,
+        severity: 'medium',
+        tags: { source: 'discord_member_search' },
+      })
+    }
+  }, [searchSwr.error])
 
   const resetChannelMutation = useSWRMutation(
     subscription?.id ? [`/api/discord/${apiType}`, 'DELETE', subscription.id] : null,
