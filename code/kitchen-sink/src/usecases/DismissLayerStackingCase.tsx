@@ -5,6 +5,7 @@ import {
   Paragraph,
   Popover,
   Select,
+  Tooltip,
   XStack,
   YStack,
 } from 'tamagui'
@@ -116,6 +117,22 @@ export function DismissLayerStackingCase() {
                             </Select.Viewport>
                           </Select.Content>
                         </Select>
+
+                        {/* tooltip inside dialog - should appear above dialog content */}
+                        <Tooltip zIndex={1_000_000}>
+                          <Tooltip.Trigger asChild>
+                            <Button testID="dialog-tooltip-trigger">
+                              Hover for Tooltip
+                            </Button>
+                          </Tooltip.Trigger>
+                          <Tooltip.Content
+                            testID="dialog-tooltip-content"
+                            enterStyle={{ opacity: 0, y: -4 }}
+                            exitStyle={{ opacity: 0, y: -4 }}
+                          >
+                            <Paragraph>Tooltip inside dialog</Paragraph>
+                          </Tooltip.Content>
+                        </Tooltip>
 
                         <XStack gap="$3" justifyContent="flex-end">
                           <Dialog.Close asChild>

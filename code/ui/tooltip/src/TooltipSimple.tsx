@@ -29,6 +29,8 @@ export const TooltipSimple: React.FC<TooltipSimpleProps> = React.forwardRef(
         offset={15}
         restMs={40}
         delay={40}
+        // ensure tooltips appear above dialogs and other portaled content
+        zIndex={1_000_000}
         {...tooltipProps}
         {...(disabled ? { open: false } : null)}
       >
@@ -44,7 +46,6 @@ export const TooltipSimple: React.FC<TooltipSimpleProps> = React.forwardRef(
         </Tooltip.Trigger>
 
         <Tooltip.Content
-          zIndex={1_000_000_000}
           enterStyle={{ y: -4, opacity: 0, scale: 0.96 }}
           exitStyle={{ y: -4, opacity: 0, scale: 0.96 }}
           scale={1}

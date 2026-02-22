@@ -24,6 +24,11 @@ export type TooltipProps = ScopedProps<PopperProps & {
         close?: number;
     };
     disableAutoCloseOnScroll?: boolean;
+    /**
+     * z-index for the tooltip portal. Use this when tooltips need to appear
+     * above other portaled content like dialogs.
+     */
+    zIndex?: number;
 }>;
 type Delay = number | Partial<{
     open: number;
@@ -52,6 +57,11 @@ export declare const Tooltip: React.ForwardRefExoticComponent<Omit<PopperProps &
         close?: number;
     };
     disableAutoCloseOnScroll?: boolean;
+    /**
+     * z-index for the tooltip portal. Use this when tooltips need to appear
+     * above other portaled content like dialogs.
+     */
+    zIndex?: number;
 }, "scope"> & {
     scope?: TooltipScopes;
 } & React.RefAttributes<unknown>> & {

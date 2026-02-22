@@ -54,6 +54,7 @@ const ALWAYS_DISABLE_TOOLTIP = {
 const TooltipContent = PopperContentFrame.styleable<TooltipContentProps>(
   (props, ref) => {
     const preventAnimation = React.useContext(PreventTooltipAnimationContext)
+    const zIndexFromContext = React.useContext(TooltipZIndexContext)
 
     return (
       <PopoverContent
@@ -66,6 +67,8 @@ const TooltipContent = PopperContentFrame.styleable<TooltipContentProps>(
           size: '$true',
         })}
         ref={ref}
+        // zIndex from root Tooltip prop flows to portal
+        {...(zIndexFromContext !== undefined && { zIndex: zIndexFromContext })}
         {...props}
         {...(preventAnimation && {
           transition: null,
@@ -110,6 +113,11 @@ export type TooltipProps = ScopedProps<
           close?: number
         }
     disableAutoCloseOnScroll?: boolean
+    /**
+     * z-index for the tooltip portal. Use this when tooltips need to appear
+     * above other portaled content like dialogs.
+     */
+    zIndex?: number
   }
 >
 
@@ -121,6 +129,7 @@ type Delay =
     }>
 
 const PreventTooltipAnimationContext = React.createContext(false)
+const TooltipZIndexContext = React.createContext<number | undefined>(undefined)
 
 export const TooltipGroup = ({
   children,
@@ -167,6 +176,7 @@ const TooltipComponent = React.forwardRef(function Tooltip(
     focus,
     open: openProp,
     disableAutoCloseOnScroll,
+    zIndex,
     scope = TOOLTIP_SCOPE,
     ...restProps
   } = props
@@ -256,7 +266,7 @@ const TooltipComponent = React.forwardRef(function Tooltip(
         bounds: [0],
       })
 
-  return (
+  const content = (
     // TODO: FloatingOverrideContext might also need to be scoped
     <FloatingOverrideContext.Provider value={useFloatingContext}>
       {/* default tooltip to a smaller size */}
@@ -284,6 +294,16 @@ const TooltipComponent = React.forwardRef(function Tooltip(
       </Popper>
     </FloatingOverrideContext.Provider>
   )
+
+  if (zIndex !== undefined) {
+    return (
+      <TooltipZIndexContext.Provider value={zIndex}>
+        {content}
+      </TooltipZIndexContext.Provider>
+    )
+  }
+
+  return content
 })
 
 const TooltipTrigger = React.forwardRef(function TooltipTrigger(
