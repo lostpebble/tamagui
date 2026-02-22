@@ -55,10 +55,6 @@ test.describe('Pseudo Transition Tests', () => {
   test('scenario 1: hoverStyle transition - fast enter (200ms), slow exit (1000ms)', async ({
     page,
   }) => {
-    const driver = (test.info().project?.metadata as any)?.animationDriver
-    // CSS driver has limitations with pseudo-class transition timing
-    test.skip(driver === 'css', 'CSS pseudo-class transitions have timing limitations')
-
     const target = page.getByTestId('scenario-1-target')
     const initialColor = await getBackgroundColor(page, 'scenario-1-target')
 
@@ -97,10 +93,6 @@ test.describe('Pseudo Transition Tests', () => {
   test('scenario 2: pressStyle transition - fast press (200ms), slow release (1000ms)', async ({
     page,
   }) => {
-    const driver = (test.info().project?.metadata as any)?.animationDriver
-    // CSS driver has limitations with pseudo-class transition timing
-    test.skip(driver === 'css', 'CSS pseudo-class transitions have timing limitations')
-
     const target = page.getByTestId('scenario-2-target')
     const initialColor = await getBackgroundColor(page, 'scenario-2-target')
 
@@ -144,9 +136,7 @@ test.describe('Pseudo Transition Tests', () => {
   test('scenario 6: opacity hover - fast fade in (200ms), slow fade out (1000ms)', async ({
     page,
   }) => {
-    const driver = (test.info().project?.metadata as any)?.animationDriver
-    // CSS driver has limitations with pseudo-class transition timing
-    test.skip(driver === 'css', 'CSS pseudo-class transitions have timing limitations')
+    // CSS driver now supports pseudo-class transitions via !important CSS rules
 
     const target = page.getByTestId('scenario-6-target')
     const initialOpacity = await getOpacity(page, 'scenario-6-target')
@@ -182,8 +172,6 @@ test.describe('Pseudo Transition Tests', () => {
   // Regression test for: prevPseudoState not initialized, causing first hover to use base transition
   test('first hover should use pseudo transition (not base)', async ({ page }) => {
     const driver = (test.info().project?.metadata as any)?.animationDriver
-    // CSS driver has limitations with pseudo-class transition timing
-    test.skip(driver === 'css', 'CSS pseudo-class transitions have timing limitations')
 
     const target = page.getByTestId('scenario-6-target')
     const initialOpacity = await getOpacity(page, 'scenario-6-target')
@@ -208,8 +196,6 @@ test.describe('Pseudo Transition Tests', () => {
   // Regression test for: reanimated keeps pseudo config on exit instead of restoring base
   test('exit should use base transition timing (not cached pseudo)', async ({ page }) => {
     const driver = (test.info().project?.metadata as any)?.animationDriver
-    // CSS driver has limitations with pseudo-class transition timing
-    test.skip(driver === 'css', 'CSS pseudo-class transitions have timing limitations')
 
     const target = page.getByTestId('scenario-6-target')
 
@@ -277,11 +263,31 @@ test.describe('Pseudo Transition Tests', () => {
     await runCycle()
   })
 
+  test('scenario 4: group hover transition - fast enter (200ms)', async ({ page }) => {
+    const driver = (test.info().project?.metadata as any)?.animationDriver
+
+    const container = page.getByTestId('scenario-4-container')
+    const initialOpacity = await getOpacity(page, 'scenario-4-target')
+    expect(initialOpacity, 'Initial opacity should be ~0.3').toBeCloseTo(0.3, 1)
+
+    // hover over container to trigger group hover (should be fast - 200ms)
+    await container.hover()
+
+    // at 350ms, a 200ms animation should be complete (extra buffer for springs)
+    await page.waitForTimeout(350)
+    const hoverOpacity = await getOpacity(page, 'scenario-4-target')
+
+    // if using 200ms transition, opacity should be close to 1 (>0.8)
+    // if using 1000ms base transition incorrectly, would be ~0.5
+    expect(
+      hoverOpacity,
+      `Group hover enter should complete quickly with 200ms transition (got ${hoverOpacity}, driver: ${driver})`
+    ).toBeGreaterThan(0.8)
+  })
+
   test('scenario 4: group hover transition - slow exit (1000ms base)', async ({
     page,
   }) => {
-    // NOTE: CSS driver doesn't properly apply fast enter transition for group pseudo yet
-    // This test focuses on verifying the slow exit (base transition) works correctly
     const container = page.getByTestId('scenario-4-container')
     const initialOpacity = await getOpacity(page, 'scenario-4-target')
     expect(initialOpacity, 'Initial opacity should be ~0.3').toBeCloseTo(0.3, 1)

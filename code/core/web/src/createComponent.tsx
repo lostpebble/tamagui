@@ -968,6 +968,10 @@ export function createComponent<
         splitStyles.effectiveTransition = effectiveTransition
       }
 
+      // update prev state for next comparison (needed for non-avoidReRenders drivers like CSS)
+      // avoidReRenders path also updates this in updateStyleListener
+      stateRef.current.prevPseudoState = extractPseudoState(state)
+
       const animations = useAnimations({
         props: propsWithAnimation,
         // if hydrating, send empty style

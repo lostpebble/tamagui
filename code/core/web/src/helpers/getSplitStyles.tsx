@@ -1430,6 +1430,16 @@ export const getSubStyle = (
       styleState.pseudoTransitions ||= {}
       styleState.pseudoTransitions[subKey as keyof typeof styleState.pseudoTransitions] =
         val
+      // for CSS driver, also add transition to CSS output so native CSS transitions work
+      // group styles ($group-*) need !important to override inline base transition
+      const animationDriver = styleState.context?.animationDriver || conf.animations
+      if (animationDriver?.outputStyle === 'css') {
+        const animationConfig = animationDriver.animations?.[val as string]
+        if (animationConfig) {
+          const important = subKey[0] === '$' ? ' !important' : ''
+          styleOut['transition'] = `all ${animationConfig}${important}`
+        }
+      }
       continue
     }
 
