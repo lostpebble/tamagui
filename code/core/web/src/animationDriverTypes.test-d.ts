@@ -230,6 +230,45 @@ describe('Type regression scenarios', () => {
 // Documentation: Applied fixes
 // =============================================================================
 
+// =============================================================================
+// Test: ExtractAnimationDriverKeys helper
+// =============================================================================
+
+describe('ExtractAnimationDriverKeys helper', () => {
+  // Internal helper type for testing - mirrors the one in types.tsx
+  type ExtractAnimationDriverKeys<E> =
+    E extends AnimationDriver<any>
+      ? 'default'
+      : E extends { default: AnimationDriver<any> }
+        ? Extract<keyof E, string>
+        : 'default'
+
+  test('single driver returns "default"', () => {
+    type Result = ExtractAnimationDriverKeys<MockCSSDriver>
+    expectTypeOf<Result>().toEqualTypeOf<'default'>()
+  })
+
+  test('multi-driver returns all keys', () => {
+    type MultiDriverConfig = {
+      default: MockCSSDriver
+      spring: MockSpringDriver
+    }
+    type Result = ExtractAnimationDriverKeys<MultiDriverConfig>
+    expectTypeOf<'default'>().toMatchTypeOf<Result>()
+    expectTypeOf<'spring'>().toMatchTypeOf<Result>()
+  })
+
+  test('multi-driver with css key returns all keys', () => {
+    type MultiDriverConfig = {
+      default: MockCSSDriver
+      css: MockSpringDriver
+    }
+    type Result = ExtractAnimationDriverKeys<MultiDriverConfig>
+    expectTypeOf<'default'>().toMatchTypeOf<Result>()
+    expectTypeOf<'css'>().toMatchTypeOf<Result>()
+  })
+})
+
 /**
  * SUMMARY OF APPLIED TYPE FIXES:
  *

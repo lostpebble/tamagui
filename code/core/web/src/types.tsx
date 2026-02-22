@@ -811,6 +811,9 @@ export type CreateTamaguiConfig<
   E extends GenericAnimations = GenericAnimations,
   F extends GenericFonts = GenericFonts,
   H extends GenericTamaguiSettings = GenericTamaguiSettings,
+  // preserve the raw animation driver keys ('default' | 'css' | etc)
+  // defaults to string so generic TamaguiInternalConfig accepts any driver keys
+  AnimDriverKeys extends string = string,
 > = {
   fonts: RemoveLanguagePostfixes<F>
   fontLanguages: GetLanguagePostfixes<F> extends never
@@ -829,6 +832,8 @@ export type CreateTamaguiConfig<
   // Multi-driver: { default: cssDriver, spring: motiDriver }
   // Single: AnimationDriver<E>
   animations: AnimationDriver<E> | AnimationsConfigObject
+  // phantom type for preserving driver keys - never set at runtime, only for type inference
+  animationDriverKeys?: AnimDriverKeys
   settings: H
 }
 
@@ -894,6 +899,16 @@ type ExtractAnimationConfig<E> =
         ? E
         : EmptyAnimations
 
+// Helper to extract animation driver keys from raw animations prop
+// Single driver: returns 'default'
+// Multi-driver { default: x, css: y }: returns 'default' | 'css'
+type ExtractAnimationDriverKeys<E> =
+  E extends AnimationDriver<any>
+    ? 'default'
+    : E extends { default: AnimationDriver<any> }
+      ? Extract<keyof E, string>
+      : 'default'
+
 export type InferTamaguiConfig<Conf> =
   Conf extends ConfProps<infer A, infer B, infer C, infer D, infer E, infer F, infer H>
     ? TamaguiInternalConfig<
@@ -903,7 +918,8 @@ export type InferTamaguiConfig<Conf> =
         D extends GenericMedia ? D : EmptyMedia,
         ExtractAnimationConfig<E>,
         F extends GenericFonts ? F : EmptyFonts,
-        H extends GenericTamaguiSettings ? H : EmptyTamaguiSettings
+        H extends GenericTamaguiSettings ? H : EmptyTamaguiSettings,
+        ExtractAnimationDriverKeys<E>
       >
     : unknown
 
@@ -984,12 +1000,14 @@ type InferredTransitionKeys =
 export type TransitionKeys = InferredTransitionKeys
 
 // Driver keys (default, css, spring) for the `animatedBy` prop
-type InferredAnimationDriverKeys =
-  TamaguiConfig['animations'] extends AnimationDriver<any>
-    ? 'default'
-    : TamaguiConfig['animations'] extends Record<string, AnimationDriver<any>>
-      ? keyof TamaguiConfig['animations']
-      : 'default'
+// Uses the preserved animationDriverKeys field from CreateTamaguiConfig
+// When animationDriverKeys is exactly `string` (the default), fall back to 'default'
+// When it's a specific union like 'default' | 'css', use that union
+type InferredAnimationDriverKeys = string extends TamaguiConfig['animationDriverKeys']
+  ? 'default'
+  : TamaguiConfig['animationDriverKeys'] extends string
+    ? TamaguiConfig['animationDriverKeys']
+    : 'default'
 
 // Combine inferred keys from config with TypeOverride keys
 // This ensures both config-defined drivers AND lazy-loaded drivers are available
@@ -1313,8 +1331,11 @@ export type TamaguiInternalConfig<
   E extends GenericAnimations = GenericAnimations,
   F extends GenericFonts = GenericFonts,
   G extends GenericTamaguiSettings = GenericTamaguiSettings,
+  // preserve the raw animation driver keys ('default' | 'css' | etc)
+  // defaults to string so generic TamaguiInternalConfig accepts any driver keys
+  AnimDriverKeys extends string = string,
 > = Omit<CreateTamaguiProps, keyof GenericTamaguiConfig> &
-  Omit<CreateTamaguiConfig<A, B, C, D, E, F, G>, 'tokens'> & {
+  Omit<CreateTamaguiConfig<A, B, C, D, E, F, G, AnimDriverKeys>, 'tokens'> & {
     // TODO need to make it this but this breaks types, revisit
     // animations: E //AnimationDriver<E>
     // with $ prefixes for fast lookups (one time cost at startup vs every render)
