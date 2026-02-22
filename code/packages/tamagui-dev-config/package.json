@@ -1,6 +1,6 @@
 {
   "name": "@tamagui/tamagui-dev-config",
-  "version": "2.0.0-rc.16",
+  "version": "2.0.0-rc.16-1771790928974",
   "source": "src/index.ts",
   "files": [
     "src",
