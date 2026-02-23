@@ -114,10 +114,10 @@ export const build = async (
     : `${sourceDir}/**/*.{tsx,jsx}` // Directory
 
   await new Promise<void>((res) => {
-    chokidar
-      .watch(watchPattern, {
-        ignoreInitial: false,
-      })
+    const watcher = chokidar.watch(watchPattern, {
+      ignoreInitial: false,
+    })
+    watcher
       .on('add', (relativePath) => {
         const sourcePath = resolve(process.cwd(), relativePath)
 
@@ -130,7 +130,9 @@ export const build = async (
 
         allFiles.push(sourcePath)
       })
-      .on('ready', () => res())
+      .on('ready', () => {
+        watcher.close().then(() => res())
+      })
   })
 
   // Now determine what to optimize for each file
