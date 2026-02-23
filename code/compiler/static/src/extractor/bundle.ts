@@ -95,42 +95,34 @@ function getESBuildConfig(
       {
         name: 'external',
         setup(build) {
-          // externalize @tamagui packages to avoid bundling CJS shim files
-          // that esbuild can't convert (they use Object.assign + require pattern)
-          // but don't externalize entry points (esbuild doesn't allow that)
-          build.onResolve({ filter: /^@tamagui\// }, (args) => {
-            // entry points cannot be external
+          // only externalize @tamagui/core and @tamagui/web - these are provided at runtime
+          // other @tamagui/* packages (like @tamagui/config/v3) must be bundled in to avoid
+          // ESM race conditions when multiple threads require() them concurrently
+          build.onResolve({ filter: /^@tamagui\/(core|web)$/ }, (args) => {
             if (args.kind === 'entry-point') {
               return null
             }
-            // special case: @tamagui/core and @tamagui/web resolve to /native for native platform
-            if (args.path.match(/^@tamagui\/(core|web)$/)) {
-              return {
-                path: platform === 'native' ? '@tamagui/core/native' : args.path,
-                external: true,
-              }
-            }
             return {
-              path: args.path,
+              path: platform === 'native' ? '@tamagui/core/native' : args.path,
               external: true,
             }
           })
 
-          build.onResolve({ filter: /react-native\/package.json$/ }, (args) => {
+          build.onResolve({ filter: /react-native\/package.json$/ }, () => {
             return {
               path: 'react-native/package.json',
               external: true,
             }
           })
 
-          build.onResolve({ filter: /^(react-native|react-native\/.*)$/ }, (args) => {
+          build.onResolve({ filter: /^(react-native|react-native\/.*)$/ }, () => {
             return {
               path: '@tamagui/react-native-web-lite',
               external: true,
             }
           })
 
-          build.onResolve({ filter: /react-native-reanimated/ }, (args) => {
+          build.onResolve({ filter: /react-native-reanimated/ }, () => {
             return {
               path: 'react-native-reanimated',
               external: true,
