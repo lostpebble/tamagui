@@ -79,7 +79,7 @@ const _sheet = __ReactNativeStyleSheet.create({
     "gap": 18
   },
   "12": {
-    "fontFamily": "-apple-system, system-ui, BlinkMacSystemFont, \\"Segoe UI\\", Roboto, Helvetica, Arial, sans-serif",
+    "fontFamily": "System",
     "fontWeight": "300",
     "letterSpacing": 0,
     "fontSize": 64.39999999999999,
@@ -91,7 +91,7 @@ const _sheet = __ReactNativeStyleSheet.create({
     "textAlign": "center"
   },
   "13": {
-    "fontFamily": "-apple-system, system-ui, BlinkMacSystemFont, \\"Segoe UI\\", Roboto, Helvetica, Arial, sans-serif",
+    "fontFamily": "System",
     "fontWeight": "300",
     "letterSpacing": 0,
     "fontSize": 14,
@@ -113,7 +113,7 @@ const _sheet = __ReactNativeStyleSheet.create({
     }]
   },
   "15": {
-    "fontFamily": "-apple-system, system-ui, BlinkMacSystemFont, \\"Segoe UI\\", Roboto, Helvetica, Arial, sans-serif",
+    "fontFamily": "System",
     "fontWeight": "300",
     "letterSpacing": 0,
     "fontSize": 14,
@@ -140,7 +140,7 @@ const _sheet = __ReactNativeStyleSheet.create({
     "gap": 7
   },
   "18": {
-    "fontFamily": "-apple-system, system-ui, BlinkMacSystemFont, \\"Segoe UI\\", Roboto, Helvetica, Arial, sans-serif",
+    "fontFamily": "System",
     "fontWeight": "300",
     "letterSpacing": 0,
     "fontSize": 14,
@@ -780,7 +780,7 @@ const _sheet = __ReactNativeStyleSheet.create({
     "gap": 18
   },
   "12": {
-    "fontFamily": "-apple-system, system-ui, BlinkMacSystemFont, \\"Segoe UI\\", Roboto, Helvetica, Arial, sans-serif",
+    "fontFamily": "System",
     "fontWeight": "300",
     "letterSpacing": 0,
     "fontSize": 64.39999999999999,
@@ -792,7 +792,7 @@ const _sheet = __ReactNativeStyleSheet.create({
     "textAlign": "center"
   },
   "13": {
-    "fontFamily": "-apple-system, system-ui, BlinkMacSystemFont, \\"Segoe UI\\", Roboto, Helvetica, Arial, sans-serif",
+    "fontFamily": "System",
     "fontWeight": "300",
     "letterSpacing": 0,
     "fontSize": 14,
@@ -814,7 +814,7 @@ const _sheet = __ReactNativeStyleSheet.create({
     }]
   },
   "15": {
-    "fontFamily": "-apple-system, system-ui, BlinkMacSystemFont, \\"Segoe UI\\", Roboto, Helvetica, Arial, sans-serif",
+    "fontFamily": "System",
     "fontWeight": "300",
     "letterSpacing": 0,
     "fontSize": 14,
@@ -841,7 +841,7 @@ const _sheet = __ReactNativeStyleSheet.create({
     "gap": 7
   },
   "18": {
-    "fontFamily": "-apple-system, system-ui, BlinkMacSystemFont, \\"Segoe UI\\", Roboto, Helvetica, Arial, sans-serif",
+    "fontFamily": "System",
     "fontWeight": "300",
     "letterSpacing": 0,
     "fontSize": 14,
