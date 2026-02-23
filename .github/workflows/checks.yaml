@@ -49,6 +49,9 @@ jobs:
       - name: Install playwright
         run: bunx playwright install
 
+      - name: Build types for vitest typecheck
+        run: tsc -b code/core/web --force
+
       - name: Run unit tests
         run: bun turbo run test:web --filter='!@tamagui/kitchen-sink' --concurrency=1
 
