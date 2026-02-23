@@ -140,10 +140,14 @@ export function createAnimations<A extends Record<string, AnimationConfig>>(
       const exitCompletedRef = useRef(false)
       const wasExitingRef = useRef(false)
       const completionScheduledRef = useRef(false)
-      // track current exit state in a ref for reliable access from callbacks
+      // track current state in refs for reliable access from callbacks
       // (closure variables can be stale when callbacks fire)
       const isExitingRef = useRef(isExiting)
       isExitingRef.current = isExiting
+      const sendExitCompleteRef = useRef(sendExitComplete)
+      sendExitCompleteRef.current = sendExitComplete
+      const animationStateRef = useRef(animationState)
+      animationStateRef.current = animationState
 
       // detect transition into exiting state
       const justStartedExiting = isExiting && !wasExitingRef.current
@@ -187,7 +191,8 @@ export function createAnimations<A extends Record<string, AnimationConfig>>(
               pendingExitCountsRef.current.size === 0
             ) {
               exitCompletedRef.current = true
-              sendExitComplete?.()
+              // use ref to avoid stale closure
+              sendExitCompleteRef.current?.()
             }
             completionScheduledRef.current = false
           }, 0)
@@ -247,13 +252,15 @@ export function createAnimations<A extends Record<string, AnimationConfig>>(
         // track whether THIS flush starts a new animation (vs using stale controls)
         let startedControls: AnimationPlaybackControlsWithThen | null = null
 
-        // IMPORTANT: Don't rely on isExiting from closure - it can be stale!
-        // Use isExitingRef.current which is updated synchronously during render.
-        // The useStyleEmitter callback captures closure variables that may be outdated,
-        // so we need to recompute animation options fresh for exits.
+        // Read current state from refs (closure variables can be stale)
         const isCurrentlyExiting = isExitingRef.current
+        const currentSendExitComplete = sendExitCompleteRef.current
+
+        // Only recompute animation options for exit animations to avoid stale state.
+        // For non-exit animations (hover, press, etc.), use the passed options which
+        // already have the correct effective transition from createComponent.
         const animationOptions =
-          isCurrentlyExiting && sendExitComplete
+          isCurrentlyExiting && currentSendExitComplete
             ? getAnimationOptions(props.transition ?? null, 'exit')
             : passedOptions
 
@@ -346,6 +353,14 @@ export function createAnimations<A extends Record<string, AnimationConfig>>(
 
             const diff = getDiff(lastDoAnimate.current, doAnimate)
             if (diff) {
+              // FIX: For exit animations, we must stop any running animation first.
+              // Without this, motion continues the previous animation (e.g., enter) and
+              // immediately resolves the new animation's promise, causing exit to complete
+              // in milliseconds instead of the expected duration.
+              if (isCurrentlyExiting && controls.current) {
+                controls.current.stop()
+              }
+
               // FIX: Handle animation interruption for position-only animations
               // Only apply this fix when:
               // 1. There's a running animation
@@ -459,7 +474,7 @@ export function createAnimations<A extends Record<string, AnimationConfig>>(
           lastDontAnimate.current = dontAnimate ? { ...dontAnimate } : {}
           lastDoAnimate.current = doAnimate ? { ...doAnimate } : {}
         } finally {
-          if (isCurrentlyExiting && sendExitComplete) {
+          if (isCurrentlyExiting && currentSendExitComplete) {
             const cycleId = exitCycleIdRef.current
 
             // only track completion if we actually started an animation in THIS flush
@@ -500,7 +515,8 @@ export function createAnimations<A extends Record<string, AnimationConfig>>(
                   pendingExitCountsRef.current.size === 0
                 ) {
                   exitCompletedRef.current = true
-                  sendExitComplete()
+                  // use ref to avoid stale closure
+                  sendExitCompleteRef.current?.()
                 }
                 completionScheduledRef.current = false
               }, 0)
@@ -511,11 +527,12 @@ export function createAnimations<A extends Record<string, AnimationConfig>>(
 
       useStyleEmitter?.((nextStyle, effectiveTransition) => {
         // effectiveTransition is computed in createComponent based on entering/exiting pseudo states
+        // Use refs for state values to avoid stale closures
         const animationProps = getMotionAnimatedProps(
           props as any,
           nextStyle,
           disableAnimation,
-          animationState,
+          animationStateRef.current, // use ref to get current state
           effectiveTransition
         )
 
@@ -724,7 +741,13 @@ export function createAnimations<A extends Record<string, AnimationConfig>>(
     const normalized = normalizeTransition(transitionProp)
 
     // Get the effective animation key based on enter/exit/default state
-    const effectiveKey = getEffectiveAnimation(normalized, animationState)
+    let effectiveKey = getEffectiveAnimation(normalized, animationState)
+
+    // Fallback: if we have enter/exit defined but state is 'default' and no default key,
+    // use enter timing as fallback to avoid empty animation options
+    if (!effectiveKey && animationState === 'default') {
+      effectiveKey = normalized.enter || normalized.exit || null
+    }
 
     // Copy global config overrides (will be converted by convertMsToS at the end)
     const globalConfigOverride: Record<string, unknown> | undefined = normalized.config
