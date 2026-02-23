@@ -343,6 +343,32 @@ export function createAnimations<A extends object>(animations: A): AnimationDriv
         const enterStyle = props.enterStyle as Record<string, unknown> | undefined
         const exitStyle = props.exitStyle as Record<string, unknown> | undefined
 
+        // Build the exit transition string - needed for both normal and interrupted exits
+        const delayStr = normalized.delay ? ` ${normalized.delay}ms` : ''
+        const durationOverride = normalized.config?.duration
+        const exitTransitionString = keys
+          .map((key) => {
+            const propAnimation = normalized.properties[key]
+            let animationValue: string | null = null
+            if (typeof propAnimation === 'string') {
+              animationValue = animations[propAnimation]
+            } else if (
+              propAnimation &&
+              typeof propAnimation === 'object' &&
+              propAnimation.type
+            ) {
+              animationValue = animations[propAnimation.type]
+            } else if (defaultAnimation) {
+              animationValue = defaultAnimation
+            }
+            if (animationValue && durationOverride) {
+              animationValue = applyDurationOverride(animationValue, durationOverride)
+            }
+            return animationValue ? `${key} ${animationValue}${delayStr}` : null
+          })
+          .filter(Boolean)
+          .join(', ')
+
         if (wasInterrupted) {
           exitInterruptedRef.current = false
           // disable transition, reset to enter state
@@ -372,6 +398,47 @@ export function createAnimations<A extends object>(animations: A): AnimationDriv
 
           // force reflow
           void node.offsetHeight
+        } else if (exitStyle) {
+          // For normal (non-interrupted) exits, we need to ensure the CSS transition is
+          // processed by the browser BEFORE the exitStyle takes effect. The issue is that
+          // React may have already applied exitStyle in the same render batch. To fix this:
+          // 1. Disable transition and reset to non-exit state
+          // 2. Force reflow so browser processes the reset
+          // 3. Use RAF to ensure we're in a new frame
+          // 4. Re-enable transition and apply exitStyle
+          // This mirrors the interrupted exit handling approach (which also uses RAF).
+          ignoreCancelEvents = true
+          node.style.transition = 'none'
+
+          // Reset to non-exit state
+          const resetStyle: Record<string, unknown> = {}
+          for (const key of Object.keys(exitStyle)) {
+            if (enterStyle?.[key] !== undefined) {
+              resetStyle[key] = enterStyle[key]
+            } else if (key === 'opacity') {
+              resetStyle[key] = 1
+            } else if (TRANSFORM_KEYS.includes(key as any)) {
+              resetStyle[key] =
+                key === 'scale' || key === 'scaleX' || key === 'scaleY' ? 1 : 0
+            }
+          }
+          applyStylesToNode(node, resetStyle)
+
+          // Force reflow
+          void node.offsetHeight
+
+          // Use RAF to ensure transition is applied in a new frame
+          rafId = requestAnimationFrame(() => {
+            if (cycleId !== exitCycleIdRef.current) return
+            // Re-enable transition
+            node.style.transition = exitTransitionString
+            // Force reflow to ensure transition is active
+            void node.offsetHeight
+            // Apply exit styles - this triggers the animation
+            applyStylesToNode(node, exitStyle)
+            // Re-enable cancel event handling
+            ignoreCancelEvents = false
+          })
         }
 
         /**
@@ -452,32 +519,8 @@ export function createAnimations<A extends object>(animations: A): AnimationDriv
         if (wasInterrupted) {
           rafId = requestAnimationFrame(() => {
             if (cycleId !== exitCycleIdRef.current) return
-            // re-enable transition using same logic as normal path
-            const delayStr = normalized.delay ? ` ${normalized.delay}ms` : ''
-            const durationOverride = normalized.config?.duration
-            node.style.transition = keys
-              .map((key) => {
-                const propAnimation = normalized.properties[key]
-                let animationValue: string | null = null
-                if (typeof propAnimation === 'string') {
-                  animationValue = animations[propAnimation]
-                } else if (
-                  propAnimation &&
-                  typeof propAnimation === 'object' &&
-                  propAnimation.type
-                ) {
-                  animationValue = animations[propAnimation.type]
-                } else if (defaultAnimation) {
-                  animationValue = defaultAnimation
-                }
-                // apply duration override if specified (matches normal path)
-                if (animationValue && durationOverride) {
-                  animationValue = applyDurationOverride(animationValue, durationOverride)
-                }
-                return animationValue ? `${key} ${animationValue}${delayStr}` : null
-              })
-              .filter(Boolean)
-              .join(', ')
+            // re-enable transition using the pre-built string
+            node.style.transition = exitTransitionString
             // force reflow again
             void node.offsetHeight
             // now apply exit styles - this triggers the transition
