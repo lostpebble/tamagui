@@ -460,6 +460,28 @@ import '@tamagui/native/setup-zeego'
 import '@tamagui/native/setup-gesture-handler'
 ```
 
+### Expo Router entry point
+
+With Expo Router, these setup imports must run **before** `expo-router/entry`. Create a custom entry point:
+
+```js
+// index.js (at project root)
+import '@tamagui/native/setup-zeego'
+// add other setup imports here as needed
+
+import 'expo-router/entry'
+```
+
+Then update your `package.json`:
+
+```json
+{
+  "main": "index.js"
+}
+```
+
+This ensures native modules like zeego are configured before Expo Router initializes your app.
+
 ## 9. Build Config
 
 Not much has changed, but there's some nice improvements you can make:
