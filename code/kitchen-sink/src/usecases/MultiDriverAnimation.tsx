@@ -35,7 +35,6 @@ export function MultiDriverAnimation() {
           <Text fontSize="$2">css</Text>
           <Square
             testID="driver-css"
-            // @ts-expect-error - only works with multi driver config
             animatedBy="css"
             size={80}
             backgroundColor={active ? '$green10' : '$purple10'}
@@ -94,7 +93,6 @@ export function MultiDriverAnimation() {
           testID="group-css"
           // @ts-expect-error - custom group name
           group="cssGroup"
-          // @ts-expect-error - only works with multi driver config
           animatedBy="css"
           padding="$4"
           backgroundColor="$gray5"
@@ -102,7 +100,6 @@ export function MultiDriverAnimation() {
         >
           <Square
             testID="group-css-child"
-            // @ts-expect-error - only works with multi driver config
             animatedBy="css"
             size={60}
             backgroundColor="$green10"
