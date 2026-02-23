@@ -94,6 +94,11 @@ interface MenuLabelProps extends ViewProps {
 interface MenuItemProps extends Omit<MenuItemImplProps, 'onSelect'> {
     onSelect?: (event: Event) => void;
     unstyled?: boolean;
+    /**
+     * Prevents the menu from closing when this item is selected.
+     * Useful for toggle items or multi-select scenarios.
+     */
+    preventCloseOnSelect?: boolean;
 }
 interface MenuItemImplProps extends ViewProps {
     disabled?: boolean;

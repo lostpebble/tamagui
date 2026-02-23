@@ -217,6 +217,11 @@ type MenuItemElement = MenuItemImplElement
 interface MenuItemProps extends Omit<MenuItemImplProps, 'onSelect'> {
   onSelect?: (event: Event) => void
   unstyled?: boolean
+  /**
+   * Prevents the menu from closing when this item is selected.
+   * Useful for toggle items or multi-select scenarios.
+   */
+  preventCloseOnSelect?: boolean
 }
 
 type MenuItemImplElement = TamaguiElement
@@ -711,6 +716,9 @@ export function createBaseMenu({
     const getItems = useCollection(scope)
     const [currentItemId, setCurrentItemId] = React.useState<string | null>(null)
     const contentRef = React.useRef<TamaguiElement>(null)
+    // the actual focusable content element (PopperContentFrame) differs from contentRef
+    // due to PopperContent's wrapper structure, so we capture it on mount
+    const focusableContentRef = React.useRef<HTMLElement | null>(null)
     const composedRefs = useComposedRefs(
       forwardedRef,
       contentRef,
@@ -754,6 +762,19 @@ export function createBaseMenu({
       return () => clearTimeout(timerRef.current)
     }, [])
 
+    // capture the actual focusable content element on mount
+    // PopperContent has a wrapper structure where the ref points to the outer
+    // TamaguiView but props like tabIndex go to the inner PopperContentFrame
+    React.useEffect(() => {
+      if (!isWeb || !context.open) return
+      // use requestAnimationFrame to ensure DOM is ready
+      const frame = requestAnimationFrame(() => {
+        const el = document.querySelector('[data-tamagui-menu-content]') as HTMLElement
+        if (el) focusableContentRef.current = el
+      })
+      return () => cancelAnimationFrame(frame)
+    }, [context.open])
+
     // dismiss on scroll (web only) - but not when scrolling inside the menu
     React.useEffect(() => {
       if (!isWeb || disableDismissOnScroll || !context.open) return
@@ -785,6 +806,9 @@ export function createBaseMenu({
     const content = (
       <PopperPrimitive.PopperContent
         role="menu"
+        // tabIndex allows the content to be focusable so that onItemLeave can
+        // focus the content frame and properly blur the previously focused item
+        tabIndex={-1}
         unstyled={unstyled}
         {...(!unstyled && {
           backgroundColor: '$background',
@@ -875,7 +899,7 @@ export function createBaseMenu({
         onItemLeave={React.useCallback(
           (event) => {
             if (isPointerMovingToSubmenu(event)) return
-            contentRef.current?.focus()
+            focusableContentRef.current?.focus()
             setCurrentItemId(null)
           },
           [isPointerMovingToSubmenu]
@@ -957,6 +981,7 @@ export function createBaseMenu({
     const {
       disabled = false,
       onSelect,
+      preventCloseOnSelect,
       children,
       scope = MENU_CONTEXT,
       // filter out native-only props that shouldn't reach the DOM
@@ -989,7 +1014,8 @@ export function createBaseMenu({
             once: true,
           })
           dispatchDiscreteCustomEvent(menuItemEl, itemSelectEvent)
-          if (itemSelectEvent.defaultPrevented) {
+          // close the menu unless preventCloseOnSelect is set or event.preventDefault() was called
+          if (itemSelectEvent.defaultPrevented || preventCloseOnSelect) {
             isPointerDownRef.current = false
           } else {
             rootContext.onClose()
@@ -998,7 +1024,9 @@ export function createBaseMenu({
           // TODO: find a better way to handle this on native
           onSelect?.({ target: menuItem } as unknown as Event)
           isPointerDownRef.current = false
-          rootContext.onClose()
+          if (!preventCloseOnSelect) {
+            rootContext.onClose()
+          }
         }
       }
     }
