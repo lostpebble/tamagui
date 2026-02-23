@@ -217,23 +217,27 @@ export async function bundleConfig(props: TamaguiOptions) {
       }
     }
 
-    let out
-    // Load the bundled config directly - it's already CJS and doesn't need transformation
-    // We don't use registerRequire here because esbuild-register has bugs with relative requires
-    // in files that hookMatcher skips
+    // clear specific output file caches so we pick up the fresh (or newly discovered) build
+    // only clear the built output files - not all require.cache entries, since that breaks
+    // external requires like @tamagui/config/v3 that are externalized in the bundled CJS
     if (hasBundledOnce) {
-      // this did cause mini-css-extract plugin to freak out
-      // clear cache to get new files
-      for (const key in require.cache) {
-        // avoid clearing core/web it seems to break things
-        if (!/(core|web)[/\\]dist/.test(key)) {
-          delete require.cache[key]
+      try {
+        delete require.cache[require.resolve(configOutPath)]
+      } catch {
+        // file may not exist yet
+      }
+      for (const p of componentOutPaths) {
+        try {
+          delete require.cache[require.resolve(p)]
+        } catch {
+          // file may not exist yet
         }
       }
     } else {
       hasBundledOnce = true
     }
 
+    let out
     out = require(configOutPath)
 
     // try and find .config, even if on .default

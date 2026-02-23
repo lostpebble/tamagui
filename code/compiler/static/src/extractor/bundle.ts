@@ -1,4 +1,4 @@
-import { basename, dirname, join } from 'node:path'
+import { join } from 'node:path'
 import esbuild from 'esbuild'
 import * as FS from 'fs-extra'
 import type { TamaguiPlatform } from '../types'
@@ -161,31 +161,18 @@ export async function esbundleTamaguiConfig(
   platform: TamaguiPlatform,
   aliases?: Record<string, string>
 ) {
-  await asyncLock(props)
   const config = getESBuildConfig(props, platform, aliases)
-  return await esbuild.build(config)
-}
 
-// until i do fancier things w plugins:
-async function asyncLock(props: Props) {
-  const lockFile = join(dirname(props.outfile), basename(props.outfile, '.lock'))
-  const lockStat = await FS.stat(lockFile).catch(() => {
-    /* ok */
+  // build to memory first, then write atomically (temp file + rename)
+  // to prevent other threads from reading partially-written files
+  const tmpFile = props.outfile + '.tmp.' + process.pid
+  const result = await esbuild.build({
+    ...config,
+    outfile: tmpFile,
   })
-  const lockedMsAgo = !lockStat
-    ? Number.POSITIVE_INFINITY
-    : new Date().getTime() - new Date(lockStat.mtime).getTime()
-  if (lockedMsAgo < 500) {
-    if (process.env.DEBUG?.startsWith('tamagui')) {
-      console.info(`Waiting for existing build`, props.entryPoints)
-    }
-    let tries = 5
-    while (tries--) {
-      if (await FS.pathExists(props.outfile)) {
-        return
-      }
-      await new Promise((res) => setTimeout(res, 50))
-    }
-  }
-  void FS.writeFile(lockFile, '')
+
+  // atomic rename prevents other threads from reading partial files
+  await FS.rename(tmpFile, props.outfile)
+
+  return result
 }
