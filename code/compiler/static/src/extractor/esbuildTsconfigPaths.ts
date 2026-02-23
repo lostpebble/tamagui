@@ -25,6 +25,11 @@ export function TsconfigPathsPlugin(): Plugin {
     name,
     setup({ onResolve }) {
       onResolve({ filter: /.*/ }, (args) => {
+        // skip @tamagui packages - they should be externalized, not resolved via tsconfig
+        if (args.path.startsWith('@tamagui/')) {
+          return null
+        }
+
         const paths = compilerOptions.paths || {}
         const hasMatchingPath = Object.keys(paths).some((p) =>
           new RegExp(p.replace('*', '\\w*')).test(args.path)

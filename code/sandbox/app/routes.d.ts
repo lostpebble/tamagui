@@ -17,7 +17,6 @@ declare module 'one' {
         | `/ssr-test`
         | `/sub`
         | `/sub/portal-missing-styles`
-        | `/test/animate-presence-exit`
         | `/test/rn-style-props`
       DynamicRoutes: 
         | `/bento/${OneRouter.SingleRoutePart<T>}`

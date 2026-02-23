@@ -3,14 +3,6 @@
   "version": "2.0.0-rc.16-1771869922321",
   "license": "MIT",
   "source": "src/index.ts",
-  "files": [
-    "src",
-    "types",
-    "dist",
-    "*.cjs",
-    "controller",
-    "setup-gesture-handler"
-  ],
   "type": "module",
   "sideEffects": [
     "*.css"

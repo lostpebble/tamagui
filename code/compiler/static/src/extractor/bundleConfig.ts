@@ -202,25 +202,23 @@ export async function bundleConfig(props: TamaguiOptions) {
     }
 
     let out
-    const { unregister } = registerRequire(props.platform || 'web')
-    try {
-      if (hasBundledOnce) {
-        // this did cause mini-css-extract plugin to freak out
-        // clear cache to get new files
-        for (const key in require.cache) {
-          // avoid clearing core/web it seems to break things
-          if (!/(core|web)[/\\]dist/.test(key)) {
-            delete require.cache[key]
-          }
+    // Load the bundled config directly - it's already CJS and doesn't need transformation
+    // We don't use registerRequire here because esbuild-register has bugs with relative requires
+    // in files that hookMatcher skips
+    if (hasBundledOnce) {
+      // this did cause mini-css-extract plugin to freak out
+      // clear cache to get new files
+      for (const key in require.cache) {
+        // avoid clearing core/web it seems to break things
+        if (!/(core|web)[/\\]dist/.test(key)) {
+          delete require.cache[key]
         }
-      } else {
-        hasBundledOnce = true
       }
-
-      out = require(configOutPath)
-    } finally {
-      unregister()
+    } else {
+      hasBundledOnce = true
     }
+
+    out = require(configOutPath)
 
     // try and find .config, even if on .default
     let config = out.default || out || out.config
@@ -230,6 +228,13 @@ export async function bundleConfig(props: TamaguiOptions) {
 
     if (!config) {
       throw new Error(`No config: ${config}`)
+    }
+
+    // check for ProxyWorm - indicates a module loading error
+    if (config._isProxyWorm) {
+      throw new Error(
+        `Got a proxied config - likely a module loading error. Set DEBUG=tamagui for details.`
+      )
     }
 
     loadedConfig = config

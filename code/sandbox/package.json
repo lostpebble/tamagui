@@ -10,6 +10,7 @@
     "prebuild:native": "one prebuild",
     "build:web": "one build",
     "prod": "bun run build:web && bun run serve",
+    "pretest": "node -e \"const ports=[8085,8086];ports.forEach(p=>{try{require('child_process').execSync('lsof -ti:'+p+' | xargs kill -9 2>/dev/null || true',{stdio:'ignore'})}catch{}})\"",
     "test": "playwright test",
     "test:web": "playwright test",
     "test:ssr": "playwright test ssr-theme.test.ts",

@@ -2,17 +2,6 @@
   "name": "@tamagui/themes",
   "version": "2.0.0-rc.16-1771869922321",
   "gitHead": "a49cc7ea6b93ba384e77a4880ae48ac4a5635c14",
-  "files": [
-    "src",
-    "types",
-    "dist",
-    "*.cjs",
-    "v3",
-    "v3-themes",
-    "v4",
-    "v5",
-    "v5-subtle"
-  ],
   "type": "module",
   "sideEffects": false,
   "main": "dist/cjs",

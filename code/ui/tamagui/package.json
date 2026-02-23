@@ -9,18 +9,6 @@
     "directory": "code/ui/tamagui"
   },
   "source": "src/index.ts",
-  "files": [
-    "src",
-    "types",
-    "dist",
-    "*.cjs",
-    "*.d.ts",
-    "linear-gradient",
-    "native",
-    "native-test",
-    "react-native-web",
-    "web"
-  ],
   "type": "module",
   "sideEffects": [
     "setup.js"

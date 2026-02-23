@@ -12,18 +12,6 @@
     "directory": "packages/core"
   },
   "source": "src/index.tsx",
-  "files": [
-    "types",
-    "dist",
-    "src",
-    "reset.css",
-    "*.cjs",
-    "*.d.ts",
-    "native",
-    "native-test",
-    "inject-styles",
-    "reactNativeTypes"
-  ],
   "type": "module",
   "sideEffects": [
     "*.css"

@@ -11,14 +11,6 @@
     "directory": "packages/web"
   },
   "source": "src/index.ts",
-  "files": [
-    "types",
-    "dist",
-    "src",
-    "reset.css",
-    "*.cjs",
-    "inject-styles"
-  ],
   "type": "module",
   "sideEffects": [
     "*.css"
