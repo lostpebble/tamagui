@@ -769,7 +769,9 @@ export function createBaseMenu({
       if (!isWeb || !context.open) return
       // use requestAnimationFrame to ensure DOM is ready
       const frame = requestAnimationFrame(() => {
-        const el = document.querySelector('[data-tamagui-menu-content]') as HTMLElement
+        // scope the query to within this menu's content to avoid grabbing a submenu's element
+        const container = contentRef.current as unknown as HTMLElement
+        const el = container?.querySelector('[data-tamagui-menu-content]') as HTMLElement
         if (el) focusableContentRef.current = el
       })
       return () => cancelAnimationFrame(frame)
