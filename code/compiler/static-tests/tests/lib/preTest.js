@@ -1,3 +1,4 @@
+import { rmSync } from 'node:fs'
 import path from 'node:path'
 
 import webpack from 'webpack'
@@ -123,6 +124,8 @@ export async function preTest() {
   if (process.env.DISABLE_PRE_TEST) {
     return
   }
+  // clear cached config so webpack builds with its own components list
+  rmSync(path.join(process.cwd(), '.tamagui'), { recursive: true, force: true })
   await extractStaticWebpackApp()
   process.env.IS_STATIC = undefined
 }
