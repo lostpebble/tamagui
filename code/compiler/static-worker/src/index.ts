@@ -127,15 +127,15 @@ function getPool(): Piscina {
 }
 
 /**
- * Load Tamagui configuration in ALL worker threads
- * Sends a warmup task to each worker so they all cache the config
- * This prevents duplicate "built config" logs when client/server builds hit different workers
+ * Load Tamagui configuration in worker
+ * Sends a warmup task to trigger config loading
+ * bundleConfig auto-detects if files exist and skips rebuild
  */
 export async function loadTamagui(options: Partial<TamaguiOptions>): Promise<any> {
   const pool = getPool()
 
-  // Use extractToClassNames with a dummy request to trigger config loading
-  // The worker will cache the config for subsequent requests
+  // use extractToClassNames with a dummy request to trigger config loading
+  // the worker will cache the config for subsequent requests
   const task = {
     type: 'extractToClassNames',
     source: '// dummy',
@@ -143,25 +143,12 @@ export async function loadTamagui(options: Partial<TamaguiOptions>): Promise<any
     options: {
       components: ['tamagui'],
       ...options,
-      // skip the log on warmup tasks after the first one
-      _skipBuildLog: false,
     },
     shouldPrintDebug: false,
   }
 
   try {
-    // warm up ALL workers by sending maxThreads tasks
-    // piscina round-robins so this ensures each worker gets the config loaded
-    // first task logs, subsequent tasks skip the log via _skipBuildLog
-    const numWorkers = pool.options.maxThreads || 2
-    const tasks = Array.from({ length: numWorkers }, (_, i) => ({
-      ...task,
-      options: {
-        ...task.options,
-        _skipBuildLog: i > 0, // only first task logs
-      },
-    }))
-    await Promise.all(tasks.map((t) => pool.run(t, { name: 'runTask' })))
+    await pool.run(task, { name: 'runTask' })
     return { success: true }
   } catch (error) {
     console.error('[static-worker] Error loading Tamagui config:', error)

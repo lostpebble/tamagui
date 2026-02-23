@@ -39,13 +39,21 @@ export function platformResolveValue(
     return replaceTokens(value, styleProps, styleState)
   }
 
-  // preserve DynamicColorIOS objects through parsing
+  // for backgroundImage (gradients), force 'web' resolution to avoid DynamicColorIOS
+  // gradients don't support dynamic color updates - RN resolves colors once at render time
+  // so we need plain values and must let the component re-render on scheme changes
+  const effectiveStyleProps =
+    key === 'backgroundImage'
+      ? { ...styleProps, resolveValues: 'web' as const }
+      : styleProps
+
+  // preserve DynamicColorIOS objects through parsing (for boxShadow/textShadow)
   const tokenMap = new Map<string, any>()
   let placeholderIdx = 0
   const withPlaceholders = value.replace(tokenPattern, (t) => {
-    let r = getTokenForKey('size', t, styleProps, styleState)
+    let r = getTokenForKey('size', t, effectiveStyleProps, styleState)
     if (r == null) {
-      r = getTokenForKey('color', t, styleProps, styleState)
+      r = getTokenForKey('color', t, effectiveStyleProps, styleState)
     }
     if (r == null) return t
     if (typeof r !== 'string' && typeof r !== 'number') {

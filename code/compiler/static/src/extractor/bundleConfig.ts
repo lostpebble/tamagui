@@ -141,7 +141,23 @@ export async function bundleConfig(props: TamaguiOptions) {
       console.info(`Building config entry`, configEntry)
     }
 
-    if (!props.disableInitialBuild) {
+    // check if config files already exist and are recent (built by another worker)
+    // this prevents duplicate builds across worker threads
+    let shouldBuild = !props.disableInitialBuild
+    if (shouldBuild && props.config) {
+      try {
+        const stat = await FS.stat(configOutPath)
+        const age = Date.now() - stat.mtimeMs
+        // if built within last 3 seconds, skip rebuild
+        if (age < 3000) {
+          shouldBuild = false
+        }
+      } catch {
+        // file doesn't exist, needs to be built
+      }
+    }
+
+    if (shouldBuild) {
       // build them to node-compat versions
       try {
         await FS.ensureDir(tmpDir)

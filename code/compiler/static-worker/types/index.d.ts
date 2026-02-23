@@ -18,8 +18,9 @@ export declare const getPragmaOptions: (props: {
     shouldDisable: boolean;
 }>;
 /**
- * Load Tamagui configuration in the worker thread
- * This is cached in the worker, so subsequent calls are fast
+ * Load Tamagui configuration in worker
+ * Sends a warmup task to trigger config loading
+ * bundleConfig auto-detects if files exist and skips rebuild
  */
 export declare function loadTamagui(options: Partial<TamaguiOptions>): Promise<any>;
 /**
