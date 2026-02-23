@@ -237,11 +237,18 @@ export function createAnimations<A extends Record<string, AnimationConfig>>(
 
       const flushAnimation = ({
         doAnimate = {},
-        animationOptions = {},
+        animationOptions: passedOptions = {},
         dontAnimate,
       }: AnimationProps) => {
         // track whether THIS flush starts a new animation (vs using stale controls)
         let startedControls: AnimationPlaybackControlsWithThen | null = null
+
+        // For exit animations, recompute options fresh to avoid stale memoized values
+        // This fixes race conditions in CI where the memoized animationState might be stale
+        const animationOptions =
+          isExiting && sendExitComplete
+            ? getAnimationOptions(props.transition ?? null, 'exit')
+            : passedOptions
 
         try {
           const node = stateRef.current.host
