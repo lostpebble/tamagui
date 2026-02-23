@@ -547,7 +547,7 @@ export type ThemeName = Exclude<GetAltThemeNames<keyof Themes>, number>;
 export type ThemeTokens = `$${ThemeKeys}`;
 type GetAnimationsFromDriver<T> = T extends {
     animations: infer A;
-} ? keyof A : never;
+} ? Extract<keyof A, string> : never;
 type GetAnimationsFromMultiDriver<T> = T extends {
     default: infer D;
 } ? GetAnimationsFromDriver<D> : T extends {

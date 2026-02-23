@@ -978,7 +978,10 @@ export type ThemeTokens = `$${ThemeKeys}`
 // Animation names (slow, fast, bouncy) for the `transition` prop
 // Extract animation keys from the driver's `animations` property
 // The AnimationDriver<Config> has an `animations: Config` property
-type GetAnimationsFromDriver<T> = T extends { animations: infer A } ? keyof A : never
+// Use Extract<keyof A, string> to filter out number/symbol keys from fallback case
+type GetAnimationsFromDriver<T> = T extends { animations: infer A }
+  ? Extract<keyof A, string>
+  : never
 
 // For multi-driver configs like { default: AnimationDriver, css: AnimationDriver }
 // Extract from the 'default' driver or first driver found
