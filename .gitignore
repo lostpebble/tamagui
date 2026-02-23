@@ -50,3 +50,8 @@ code/studio/types/**
 .expo
 .vite-inspect
 .claude/
+
+# Playwright
+.playwright-report/
+.playwright-results/
+test-results/
