@@ -1,6 +1,6 @@
 {
   "name": "@tamagui/tabs-headless",
-  "version": "2.0.0-rc.16-1771790928974",
+  "version": "2.0.0-rc.16-1771815037706",
   "source": "src/index.ts",
   "files": [
     "src",
