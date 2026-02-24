@@ -141,19 +141,25 @@ export async function bundleConfig(props: TamaguiOptions) {
       console.info(`Building config entry`, configEntry)
     }
 
-    // check if config files already exist and are recent (built by another worker)
-    // this prevents duplicate builds across worker threads
+    // check if ALL output files (config + components) already exist and are recent
+    // (built by another worker) - this prevents duplicate builds across worker threads
+    // we must check ALL files, not just the config, to avoid a race where another
+    // worker has written the config but not yet finished writing component files
     let shouldBuild = !props.disableInitialBuild
     if (shouldBuild && props.config) {
+      const allOutFiles = [configOutPath, ...componentOutPaths]
       try {
-        const stat = await FS.stat(configOutPath)
-        const age = Date.now() - stat.mtimeMs
-        // if built within last 3 seconds, skip rebuild
-        if (age < 3000) {
+        const stats = await Promise.all(
+          allOutFiles.map((f) => FS.stat(f).catch(() => null))
+        )
+        const allExistAndRecent = stats.every(
+          (s) => s !== null && Date.now() - s.mtimeMs < 3000
+        )
+        if (allExistAndRecent) {
           shouldBuild = false
         }
       } catch {
-        // file doesn't exist, needs to be built
+        // something went wrong checking files, just build
       }
     }
 
