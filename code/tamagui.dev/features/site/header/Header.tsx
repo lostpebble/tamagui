@@ -1019,7 +1019,7 @@ const HeadAnchor = styled(Paragraph, {
   render: 'a',
   fontFamily: '$mono',
   px: '$4',
-  py: '$4',
+  py: '$3',
   cursor: 'pointer',
   fontSize: 18,
   color: '$color11',

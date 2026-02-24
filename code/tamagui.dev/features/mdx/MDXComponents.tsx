@@ -297,7 +297,7 @@ const componentsIn = {
                 py="$1"
                 px="$2"
                 self="flex-start"
-                bg="$color3"
+                bg="$color2"
                 rounded="$3"
                 cursor="pointer"
                 onPress={onCopy}
@@ -344,7 +344,7 @@ const componentsIn = {
                   py="$1"
                   px="$2"
                   self="flex-start"
-                  bg="$color3"
+                  bg="$color2"
                   rounded="$3"
                   cursor="pointer"
                   onPress={tamaguiCmdClip.onCopy}
@@ -497,7 +497,14 @@ const componentsIn = {
   h5: (props) => <H5 size="$6" fontWeight="600" mt="$4" {...props} />,
 
   p: (props) => (
-    <Paragraph className="docs-paragraph" display="block" size="$6" my="$2" {...props} />
+    <Paragraph
+      className="docs-paragraph"
+      display="block"
+      size="$6"
+      my="$2"
+      color="$color11"
+      {...props}
+    />
   ),
 
   a: ({ href = '', children, ...props }) => {

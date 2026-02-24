@@ -172,7 +172,7 @@ export const DocCodeBlock = forwardRef((props: any, ref) => {
               mb={0}
               id={id}
               justify="center"
-              bg="$color3"
+              bg="$color2"
               position="relative"
             >
               {showFileName && (
