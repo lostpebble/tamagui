@@ -1075,7 +1075,7 @@ const HeadAnchor = styled(Paragraph, {
 
 const Frame = styled(YStack, {
   className: 'header-popover-frame',
-  transition: 'medium',
+  transition: '300ms',
   flex: 1,
   rounded: '$5',
   overflow: 'hidden',
