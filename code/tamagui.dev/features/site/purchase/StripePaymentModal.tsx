@@ -791,7 +791,7 @@ export const StripePaymentModal = (props: StripePaymentModalProps) => {
       },
     }
 
-    // V2: $350 one-time, V1: legacy monthly + yearly
+    // V2: $250 one-time, V1: legacy monthly + yearly
     const baseAmount = isSupportUpgradeOnly
       ? SUPPORT_TIERS[supportTier].price * 100
       : isV2

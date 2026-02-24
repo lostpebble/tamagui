@@ -5,7 +5,7 @@ const isTestMode =
 const TEST_PRODUCTS = {
   PRO_V2_LICENSE: {
     productId: 'prod_TzXqrfOfIkbBHW',
-    priceId: 'price_1T1YlQFQGtHoG6xcKy2zoanG', // $350 one-time
+    priceId: 'price_1T4Os6FQGtHoG6xcZdBRTpwo', // $250 one-time
   },
   PRO_V2_UPGRADE: {
     productId: 'prod_TzXqrfOfIkbBHW',
@@ -35,13 +35,13 @@ const LIVE_PRODUCTS = {
   // ============================================
 
   /**
-   * V2 Pro License - $350 one-time per project
+   * V2 Pro License - $250 one-time per project
    * Includes: all templates (v1 takeout, v2 takeout, takeout static)
    * Includes: 1 year of updates, basic chat support, unlimited team
    */
   PRO_V2_LICENSE: {
     productId: 'prod_TneqayKPO32G63',
-    priceId: 'price_1T1YoKFQGtHoG6xcQXOUQeKq', // $350 one-time
+    priceId: 'price_1T4OsOFQGtHoG6xcBAL0yFd1', // $250 one-time
   },
 
   /**

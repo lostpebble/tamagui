@@ -1431,31 +1431,12 @@ const SupportTabContent = ({
   supportTier: SupportTier
   setSupportTier: (value: SupportTier) => void
 }) => {
-  const tiers: {
-    value: SupportTier
-    label: string
-    price: number
-    description: string
-  }[] = [
-    {
-      value: 'chat',
-      label: 'Chat',
-      price: 0,
-      description: 'Community Discord access, no SLA',
-    },
-    {
-      value: 'direct',
-      label: 'Direct',
-      price: 500,
-      description: '5 bug fixes/year, 2 day response',
-    },
-    {
-      value: 'sponsor',
-      label: 'Sponsor',
-      price: 2000,
-      description: 'Unlimited priority fixes, 1 day response',
-    },
-  ]
+  const tiers = (Object.keys(SUPPORT_TIERS) as SupportTier[]).map((key) => ({
+    value: key,
+    label: SUPPORT_TIERS[key].label,
+    price: SUPPORT_TIERS[key].price,
+    description: SUPPORT_TIERS[key].description,
+  }))
 
   const formatCurrency = (price: number) => {
     if (price === 0) return 'Included'

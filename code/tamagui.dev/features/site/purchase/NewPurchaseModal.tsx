@@ -46,6 +46,7 @@ export { purchaseModal, usePurchaseModal } from './purchaseModalStore'
 // import for internal use
 import { FaqTabContent } from './FaqTabContent'
 import { SUPPORT_TIERS, type SupportTier } from './paymentModalStore'
+import { V2_LICENSE_PRICE } from '~/features/stripe/pricing'
 import { calculatePromoPrice } from './promoConfig'
 
 export const NewPurchaseModal = () => {
@@ -152,8 +153,7 @@ export function PurchaseModalContents() {
     }
   }
 
-  // V2 Pricing: $350 one-time per project
-  const V2_PRICE = 350
+  const V2_PRICE = V2_LICENSE_PRICE
 
   // Support tier monthly price
   const supportTierMonthly = SUPPORT_TIERS[supportTier].price

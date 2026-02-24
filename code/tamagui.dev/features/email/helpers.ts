@@ -204,7 +204,7 @@ export function sendV1UpgradeEmail(
 
   <h2>New Pricing</h2>
 
-  <p>The new plan is <strong>$350 per project</strong> (one web domain + iOS + Android), with an optional <strong>$100/year</strong> to continue receiving updates after the first year.</p>
+  <p>The new plan is <strong>$250 per project</strong> (one web domain + iOS + Android), with an optional <strong>$100/year</strong> to continue receiving updates after the first year.</p>
 
   <h2>Automatic Upgrade Available</h2>
 
