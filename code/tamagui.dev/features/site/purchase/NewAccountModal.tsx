@@ -71,6 +71,7 @@ import {
 import {
   COUNTRY_NAMES,
   getParityDiscount as getParityDiscountForCountry,
+  getParitySampleCountries,
 } from '~/features/geo-pricing/parityConfig'
 
 const AddTeamMemberModalComponent = lazy(() =>
@@ -2854,14 +2855,8 @@ const AdminWhitelistSubTab = () => {
   )
 }
 
-// sample countries from each parity tier for quick testing
-const PARITY_SAMPLE_COUNTRIES = {
-  '40% off': ['IN', 'PK', 'UA', 'VN', 'PH'],
-  '30% off': ['BR', 'MX', 'AR', 'TR', 'ZA'],
-  '25% off': ['CN', 'TW', 'KR', 'IT', 'ES'],
-  '15% off': ['DE', 'FR', 'JP', 'SE', 'NL'],
-  '0% (no discount)': ['US', 'GB', 'AU', 'CA', 'CH'],
-}
+// generated from actual tier config so labels stay in sync
+const PARITY_SAMPLE_COUNTRIES = getParitySampleCountries()
 
 function countryCodeToFlag(countryCode: string): string {
   if (!countryCode || countryCode.length !== 2) return '🌍'

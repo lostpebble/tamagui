@@ -85,7 +85,11 @@ export function PurchaseModalContents() {
 
   useEffect(() => {
     if (parityDeals) {
-      sendEvent(`Pro: Show Parity Deals`)
+      sendEvent(`Pro: Show Parity Deals`, {
+        country: parityDeals.countryCode,
+        discount: parityDeals.discountPercentage,
+        countryName: parityDeals.country,
+      })
     }
   }, [parityDeals])
 
