@@ -164,8 +164,6 @@ class ScrollView extends React.Component<any> {
       scrollIndicatorInsets,
       scrollPerfTag,
       scrollToOverflowEnabled,
-      showsHorizontalScrollIndicator: _showsH,
-      showsVerticalScrollIndicator: _showsV,
       snapToAlignment,
       snapToEnd,
       snapToInterval,

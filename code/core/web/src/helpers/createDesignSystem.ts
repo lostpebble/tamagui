@@ -244,6 +244,8 @@ export function getCSS(
 .is_Input::placeholder, .is_TextArea::placeholder {color: var(--placeholderColor);}
 ._hsb-x > div::-webkit-scrollbar:horizontal { display: none; }
 ._hsb-y > div::-webkit-scrollbar:vertical { display: none; }
+._hsb-x > div { scrollbar-width: none; }
+._hsb-y > div { scrollbar-width: none; }
 ${autoVarCSS}
 ${themeConfig.cssRuleSets.join(separator)}`
 
