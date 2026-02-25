@@ -180,5 +180,6 @@ export declare const tokens: {
         $20: number;
     };
 };
+export type V5Tokens = typeof tokens;
 export {};
 //# sourceMappingURL=v5-tokens.d.ts.map

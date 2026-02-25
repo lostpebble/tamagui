@@ -60,6 +60,8 @@ export const media = {
   'height-lg': { minHeight: breakpoints.lg },
 } as const
 
+export type V5Media = typeof media
+
 export const mediaQueryDefaultActive = {
   touchable: process.env.TAMAGUI_TARGET === 'native',
   hoverable: process.env.TAMAGUI_TARGET !== 'native',

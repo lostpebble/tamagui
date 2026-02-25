@@ -82,6 +82,7 @@ export declare const media: {
         readonly minHeight: number;
     };
 };
+export type V5Media = typeof media;
 export declare const mediaQueryDefaultActive: {
     touchable: boolean;
     hoverable: boolean;

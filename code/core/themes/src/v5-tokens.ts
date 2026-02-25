@@ -103,3 +103,5 @@ export const tokens = {
   space,
   size,
 } as const
+
+export type V5Tokens = typeof tokens

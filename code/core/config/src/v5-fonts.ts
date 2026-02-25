@@ -108,3 +108,5 @@ export const fonts = {
     sizeLineHeight: headingLineHeight,
   }),
 }
+
+export type V5Fonts = typeof fonts
