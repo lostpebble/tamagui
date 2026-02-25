@@ -87,7 +87,7 @@ function generatedThemesToTypescript(themes: Record<string, any>) {
     string,
   ][]
 
-  const baseTypeString = `type Theme = {
+  const baseTypeString = `export type V5Theme = {
 ${baseKeys
   .map(([k]) => {
     return `  ${k}: string;\n`
@@ -104,7 +104,7 @@ function t(a: [number, number][]) {
   for (const [ki, vi] of a) {
     res[ks[ki] as string] = colors[vi] as string
   }
-  return res as Theme
+  return res as V5Theme
 }
 `
 
@@ -128,8 +128,8 @@ function t(a: [number, number][]) {
   // add all themes
   let nameI = 0
 
-  let themeTypes = `type ThemeNames =`
-  let exported = `export const themes: Record<ThemeNames, Theme> = {`
+  let themeTypes = `export type V5ThemeNames =`
+  let exported = `export type V5Themes = Record<V5ThemeNames, V5Theme>\n\nexport const themes: V5Themes = {`
 
   dedupedThemes.forEach((theme) => {
     nameI++
