@@ -170,6 +170,27 @@ export default () => (
 )
 ```
 
+### Styling Text Color
+
+In v2, `color` is not a direct prop on the Button frame. Instead, style your
+text through `Button.Text`. For interactive color changes on hover or press, use
+Tamagui's `group` prop to coordinate styles between parent and child:
+
+```tsx
+export default () => (
+  <Button group="btn" bg="pink">
+    <Button.Text color="blue" $group-btn-hover={{ color: 'red' }}>
+      Hello world
+    </Button.Text>
+  </Button>
+)
+```
+
+By setting `group="btn"` on the Button frame, any child can reference that group
+for interactive styles using `$group-btn-hover`, `$group-btn-press`, and so on.
+This is more flexible and explicit than passing `color` directly, as it lets you
+independently control text, icon, and frame styles for every interaction state.
+
 This may only be about a hundred lines of code, but there's a lot to take in. And
 behind the scenes, there's a lot going on to make this possible.
 

@@ -165,6 +165,28 @@ export default () => (
   `type="submit"` explicitly when you want form submission behavior.
 </Notice>
 
+## Text Styling
+
+Button does not support a `color` prop directly. Instead, use `Button.Text`
+for full control over text styling. Combine it with the `group` prop on
+Button to coordinate interactive styles between the frame and its children:
+
+```tsx
+import { Button } from 'tamagui'
+
+export default () => (
+  <Button group="btn" bg="pink">
+    <Button.Text color="blue" $group-btn-hover={{ color: 'red' }}>
+      Hello world
+    </Button.Text>
+  </Button>
+)
+```
+
+The `group` prop lets any child reference interactive states like
+`$group-btn-hover`, `$group-btn-press`, and `$group-btn-focus` for
+precise styling per interaction state.
+
 ## Creating Your Own Button
 
 Tamagui now has all the features necessary to make creating a custom Button easy
@@ -318,7 +340,7 @@ Buttons extend Stack views inheriting all the
     {
       name: '// Text Styling',
       description:
-        'To style the text inside the Button (e.g., color, fontWeight), use `styled(Button, { ... })` or create a custom button component using `Button.Text`. Direct text props are not passed to the inner text element for performance and simplicity.',
+        'Button does not support `color` directly. To style text color, use `Button.Text` with the `group` prop for interactive states. See the Text Styling section above.',
       type: '---',
     },
   ]}
