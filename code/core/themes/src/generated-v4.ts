@@ -1,5 +1,5 @@
 // @ts-nocheck
-type Theme = {
+export type Theme = {
   accentBackground: string;
   accentColor: string;
   background0: string;
@@ -674,7 +674,7 @@ const n60 = t([[32, 329],[33, 328],[34, 329],[35, 328],[36, 242],[37, 331],[24, 
 const n61 = t([[32, 329],[33, 328],[34, 329],[35, 328],[36, 242],[37, 331],[24, 322],[25, 324],[26, 325],[27, 324],[28, 325],[29, 326],[31, 325],[30, 324]])
 const n62 = t([[32, 329],[33, 328],[34, 329],[35, 328],[36, 242],[37, 331],[24, 321],[25, 323],[26, 324],[27, 323],[28, 324],[29, 325],[31, 324],[30, 323]])
 
-type ThemeNames =
+export type ThemeNames =
  | 'light'
  | 'dark'
  | 'light_accent'
@@ -704,7 +704,9 @@ type ThemeNames =
  | 'dark_yellow_accent'
  | 'dark_green_accent'
 
-export const themes: Record<ThemeNames, Theme> = {
+export type Themes = Record<ThemeNames, Theme>
+
+export const themes: Themes = {
   light: n1,
   dark: n2,
   light_accent: n3,

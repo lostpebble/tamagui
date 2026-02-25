@@ -1,5 +1,5 @@
 // @ts-nocheck
-export type V5SubtleTheme = {
+export type Theme = {
   accentBackground: string;
   accentColor: string;
   background0: string;
@@ -245,7 +245,7 @@ function t(a: [number, number][]) {
   for (const [ki, vi] of a) {
     res[ks[ki] as string] = colors[vi] as string
   }
-  return res as V5SubtleTheme
+  return res as Theme
 }
 export const colors = [
   'hsla(0, 0%, 10%, 1)',
@@ -1666,7 +1666,7 @@ const n120 = t([[24, 927],[25, 928],[26, 927],[27, 926],[28, 923],[29, 924],[30,
 const n121 = t([[24, 961],[25, 962],[26, 961],[27, 960],[28, 957],[29, 958],[30, 956],[31, 961],[32, 957],[33, 959],[34, 622],[35, 959],[36, 958],[224, 968],[225, 969],[226, 970],[227, 971],[228, 972],[229, 973],[230, 974],[231, 975],[232, 976],[233, 977],[234, 978],[235, 979],[3, 948],[4, 949],[5, 950],[6, 951],[236, 980]])
 const n122 = t([[24, 657],[25, 658],[26, 657],[27, 656],[28, 653],[29, 654],[30, 652],[31, 657],[32, 653],[33, 196],[34, 655],[35, 196],[36, 654],[224, 664],[225, 665],[226, 666],[227, 667],[228, 668],[229, 669],[230, 670],[231, 671],[232, 672],[233, 673],[234, 674],[235, 675],[3, 645],[4, 646],[5, 647],[6, 648],[236, 676]])
 
-export type V5SubtleThemeNames =
+export type ThemeNames =
  | 'light'
  | 'dark'
  | 'light_accent'
@@ -1772,9 +1772,9 @@ export type V5SubtleThemeNames =
  | 'dark_neutral_surface1'
  | 'dark_neutral_surface2'
 
-export type V5SubtleThemes = Record<V5SubtleThemeNames, V5SubtleTheme>
+export type Themes = Record<ThemeNames, Theme>
 
-export const themes: V5SubtleThemes = {
+export const themes: Themes = {
   light: n1,
   dark: n2,
   light_accent: n3,
