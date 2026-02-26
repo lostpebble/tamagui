@@ -1120,11 +1120,6 @@ export function createBaseMenu({
           asChild
           __scopeRovingFocusGroup={scope}
           focusable={!disabled}
-          {...(!unstyled && {
-            flexDirection: 'row',
-            alignItems: 'center',
-          })}
-          {...itemProps}
         >
           <_Item
             unstyled={unstyled}
