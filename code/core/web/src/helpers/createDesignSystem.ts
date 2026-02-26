@@ -242,10 +242,10 @@ export function getCSS(
 ._no_backdrop::backdrop {display: none;}
 .is_Input::selection, .is_TextArea::selection {background-color: var(--selectionColor);}
 .is_Input::placeholder, .is_TextArea::placeholder {color: var(--placeholderColor);}
-._hsb-x > div::-webkit-scrollbar:horizontal { display: none; }
-._hsb-y > div::-webkit-scrollbar:vertical { display: none; }
-._hsb-x > div { scrollbar-width: none; }
-._hsb-y > div { scrollbar-width: none; }
+._hsb-x::-webkit-scrollbar:horizontal { display: none; }
+._hsb-y::-webkit-scrollbar:vertical { display: none; }
+._hsb-x { scrollbar-width: none; }
+._hsb-y { scrollbar-width: none; }
 ${autoVarCSS}
 ${themeConfig.cssRuleSets.join(separator)}`
 

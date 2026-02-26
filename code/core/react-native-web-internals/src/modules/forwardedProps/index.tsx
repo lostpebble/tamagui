@@ -109,6 +109,7 @@ export const touchProps = {
 
 export const styleProps = {
   classList: true,
+  className: true,
   style: true,
 }
 

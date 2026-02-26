@@ -101,6 +101,7 @@ export declare const touchProps: {
 };
 export declare const styleProps: {
     classList: boolean;
+    className: boolean;
     style: boolean;
 };
 export declare const forwardedProps: {
@@ -199,6 +200,7 @@ export declare const forwardedProps: {
     };
     styleProps: {
         classList: boolean;
+        className: boolean;
         style: boolean;
     };
 };
@@ -207,6 +209,7 @@ export declare const forwardPropsListText: {
     lang: boolean;
     pointerEvents: boolean;
     classList: boolean;
+    className: boolean;
     style: boolean;
     onTouchCancel: boolean;
     onTouchCancelCapture: boolean;
@@ -295,6 +298,7 @@ export declare const forwardPropsListView: {
     lang: boolean;
     pointerEvents: boolean;
     classList: boolean;
+    className: boolean;
     style: boolean;
     onTouchCancel: boolean;
     onTouchCancelCapture: boolean;
