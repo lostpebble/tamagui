@@ -1,6 +1,6 @@
 {
   "name": "@tamagui/native-bundle",
-  "version": "2.0.0-rc.18-1772099573011",
+  "version": "2.0.0-rc.19",
   "description": "Vite-based bundler for creating native CommonJS bundles for Tamagui packages",
   "license": "MIT",
   "author": {
