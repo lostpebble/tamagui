@@ -380,6 +380,25 @@ describe('DynamicColorIOS preserved in object format', () => {
       },
     ])
   })
+
+  test('backgroundImage parses hsla colors with spaces', () => {
+    const props = {
+      backgroundImage:
+        'linear-gradient(135deg, hsla(338, 58%, 92%, 1), hsla(340, 70%, 96%, 1))',
+    }
+
+    const result = getSplitStylesForValue(props)
+    expect((result?.style as any)?.experimental_backgroundImage).toEqual([
+      {
+        type: 'linear-gradient',
+        direction: '135deg',
+        colorStops: [
+          { color: 'hsla(338, 58%, 92%, 1)' },
+          { color: 'hsla(340, 70%, 96%, 1)' },
+        ],
+      },
+    ])
+  })
 })
 
 // Helper function for easier testing

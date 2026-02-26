@@ -57,7 +57,8 @@ function parseBackgroundImage(css: string, tokenMap?: TokenMap): any[] | undefin
 
   const colorStops: any[] = []
   for (let i = startIdx; i < parts.length; i++) {
-    const stopParts = parts[i].trim().split(/\s+/)
+    const stopParts = parts[i].trim().match(/\S+\([^)]*\)|\S+/g)
+    if (!stopParts) continue
     const colorRaw = stopParts[0]
     const color = resolveColor(colorRaw, tokenMap)
     const positions = stopParts.slice(1)
