@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test'
 
-test('ScrollView showsHorizontalScrollIndicator={false} hides scrollbar', async ({ page }) => {
+test('ScrollView showsHorizontalScrollIndicator={false} hides scrollbar', async ({
+  page,
+}) => {
   await page.goto('/test/scrollview-hide-scrollbar')
   await page.waitForSelector('[data-testid="scroll-h-hidden"]')
 
@@ -12,7 +14,9 @@ test('ScrollView showsHorizontalScrollIndicator={false} hides scrollbar', async 
   expect(scrollbarWidth).toBe('none')
 })
 
-test('ScrollView showsVerticalScrollIndicator={false} hides scrollbar', async ({ page }) => {
+test('ScrollView showsVerticalScrollIndicator={false} hides scrollbar', async ({
+  page,
+}) => {
   await page.goto('/test/scrollview-hide-scrollbar')
   await page.waitForSelector('[data-testid="scroll-v-hidden"]')
 
@@ -24,7 +28,9 @@ test('ScrollView showsVerticalScrollIndicator={false} hides scrollbar', async ({
   expect(scrollbarWidth).toBe('none')
 })
 
-test('ScrollView showsHorizontalScrollIndicator={true} does NOT hide scrollbar', async ({ page }) => {
+test('ScrollView showsHorizontalScrollIndicator={true} does NOT hide scrollbar', async ({
+  page,
+}) => {
   await page.goto('/test/scrollview-hide-scrollbar')
   await page.waitForSelector('[data-testid="scroll-h-visible"]')
 

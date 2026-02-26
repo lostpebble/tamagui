@@ -13,40 +13,40 @@ import oneBall from '~/public/app-icon.png'
 
 export default function Layout() {
   return (
-    <>
-      {isWeb && (
-        <>
-          <meta charSet="utf-8" />
-          <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-          <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, maximum-scale=5"
-          />
-          <link rel="icon" href="/favicon.svg" />
-        </>
-      )}
+    <html lang="en-US">
+      <head>
+        <meta charSet="utf-8" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=5"
+        />
+        <link rel="icon" href="/favicon.svg" />
+      </head>
 
-      <LoadProgressBar />
+      <body>
+        <LoadProgressBar />
 
-      <SchemeProvider>
-        <TamaguiRootProvider>
-          <YStack bg="$color1" minH="100%" gap="$4" flex={1}>
-            <SafeAreaView>
-              {/* <Toaster position="top-center" /> */}
+        <SchemeProvider>
+          <TamaguiRootProvider>
+            <YStack bg="$color1" minH="100%" gap="$4" flex={1}>
+              <SafeAreaView>
+                {/* <Toaster position="top-center" /> */}
 
-              <XStack items="center" justify="center" gap="$4" py="$4">
-                <Image src={oneBall} width={42} height={42} />
-                <ToggleThemeButton />
-              </XStack>
+                <XStack items="center" justify="center" gap="$4" py="$4">
+                  <Image src={oneBall} width={42} height={42} />
+                  <ToggleThemeButton />
+                </XStack>
 
-              <Configuration animationDriver={animationsMotion}>
-                <Slot />
-              </Configuration>
-            </SafeAreaView>
-          </YStack>
-        </TamaguiRootProvider>
-      </SchemeProvider>
-    </>
+                <Configuration animationDriver={animationsMotion}>
+                  <Slot />
+                </Configuration>
+              </SafeAreaView>
+            </YStack>
+          </TamaguiRootProvider>
+        </SchemeProvider>
+      </body>
+    </html>
   )
 }
 

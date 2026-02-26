@@ -224,6 +224,7 @@ export function createAnimations<A extends object>(animations: A): AnimationDriv
       stateRef,
       styleState,
     }: any) => {
+      const isHydrating = componentState.unmounted === true
       const isEntering = !!componentState.unmounted
       const isExiting = presence?.[0] === false
       const sendExitComplete = presence?.[1]
@@ -546,6 +547,11 @@ export function createAnimations<A extends object>(animations: A): AnimationDriv
         props.enterStyle,
         props.exitStyle,
       ])
+
+      // tamagui doesnt even use animation output during hydration
+      if (isHydrating) {
+        return null
+      }
 
       // Check if we have any animation to apply
       if (!hasNormalizedAnimation(normalized)) {

@@ -89,7 +89,7 @@ export default function HydrationCSSTest() {
           Hydration Test: css driver
         </Text>
 
-        <Text fontSize="$3" color="$color11">
+        <Text fontSize="$3" color="$color11" data-testid={`hydrated-${didHydrate}`}>
           Hydrated: {String(didHydrate)}
         </Text>
 

@@ -997,8 +997,9 @@ export function createComponent<
 
       const animations = useAnimations({
         props: propsWithAnimation,
-        // if hydrating, send empty style
-        style: splitStylesStyle || {},
+        // clone style to prevent animation driver mutations from leaking to viewProps
+        // during SSR/pre-hydration (CSS driver mutates style.transition in place)
+        style: isHydrated ? splitStylesStyle || {} : { ...splitStylesStyle },
         // @ts-ignore
         styleState: splitStyles,
         useStyleEmitter,

@@ -59,7 +59,7 @@ test.describe('animatedBy prop', () => {
     // Capture shortly after click
     // If broken (no driver), opacity jumps instantly to END
     // If working, opacity should NOT be at END yet (animation in progress)
-    await page.waitForTimeout(16) // ~1 frame
+    await page.waitForTimeout(50)
     const immediateOpacity = await explicitElement.evaluate((el) =>
       Number(getComputedStyle(el).opacity)
     )

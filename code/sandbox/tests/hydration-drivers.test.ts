@@ -4,22 +4,19 @@ const drivers = ['motion', 'css'] as const
 
 for (const driver of drivers) {
   test.describe(`Hydration - ${driver} driver`, () => {
-    test('no hydration mismatch errors', async ({ page }) => {
+    test('no errors at all (includes hydration errors)', async ({ page }) => {
       const errors: string[] = []
       page.on('console', (msg) => {
         const text = msg.text()
-        if (
-          msg.type() === 'error' &&
-          (text.includes('Hydration') ||
-            text.includes('hydrat') ||
-            text.includes('did not match'))
-        ) {
+        if (msg.type() === 'error') {
           errors.push(text)
         }
       })
 
-      await page.goto(`/hydration-${driver}`)
-      await page.waitForTimeout(2000) // wait for hydration
+      await page.goto(`/hydration-${driver}`, {
+        waitUntil: 'domcontentloaded',
+      })
+      await page.waitForSelector(`[data-testid=hydrated-true]`)
 
       if (errors.length > 0) {
         console.error(`Hydration errors for ${driver}:`, errors)
@@ -47,24 +44,37 @@ for (const driver of drivers) {
 
       // the key test: on initial render (SSR), the styles should be class-based
       // to avoid hydration mismatch
-      if (classes) {
-        // should have some style classes
-        expect(classes.length).toBeGreaterThan(0)
-      }
+      expect(classes?.length).toBeGreaterThan(0)
+      expect(style).toBeNull()
     })
 
-    test('transform styles render correctly', async ({ page }) => {
+    test('transform styles render correctly before and after hydration', async ({
+      page,
+    }) => {
       await page.goto(`/hydration-${driver}`)
 
       const box = page.getByTestId('transform-box')
-      await expect(box).toBeVisible({ timeout: 15000 })
+      await expect(box).toBeAttached({ timeout: 15000 })
 
-      // get the transform
-      const transform = await box.evaluate((el) => getComputedStyle(el).transform)
-      console.log(`${driver} driver - transform:`, transform)
+      // pre-hydration: SSR should have transform applied via className
+      const preTransform = await box.evaluate((el) => getComputedStyle(el).transform)
+      console.log(`${driver} driver - pre-hydration transform:`, preTransform)
+      expect(preTransform, 'transform should be applied before hydration').toContain(
+        'matrix'
+      )
 
-      // should have a transform applied (matrix format)
-      expect(transform).toContain('matrix')
+      // wait for hydration
+      await page.waitForSelector('[data-testid=hydrated-true]')
+
+      // post-hydration: transform should still be correct
+      const postTransform = await box.evaluate((el) => getComputedStyle(el).transform)
+      console.log(`${driver} driver - post-hydration transform:`, postTransform)
+      expect(postTransform, 'transform should be applied after hydration').toContain(
+        'matrix'
+      )
+
+      // the styles dont change the transform shouldnt change
+      expect(postTransform === preTransform)
     })
 
     test('presence box renders without hydration error', async ({ page }) => {

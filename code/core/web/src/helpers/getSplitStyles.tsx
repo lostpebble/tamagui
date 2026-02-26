@@ -1151,13 +1151,13 @@ export const getSplitStyles: StyleSplitter = (
             styleProps.noClass &&
             props.animateOnly?.includes(key)
 
-          // or not animated but you have animateOnly
-          // (moves it to style={}, nice to avoid generating lots of classnames)
-          // only apply this optimization when outputStyle is 'css' (always className)
-          // for 'inline' drivers, we need className during SSR for hydration consistency
+          // animateOnly properties should always use className on server and initial
+          // client render to avoid hydration mismatch (server has isAnimated=false but
+          // client has isAnimated=true for CSS driver, causing different style output)
           const nonAnimatedTransitionOnly =
             !isAnimatedAndTransitionOnly &&
             !styleProps.isAnimated &&
+            isClient &&
             driver?.outputStyle === 'css' &&
             props.animateOnly?.includes(key)
 

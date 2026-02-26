@@ -89,7 +89,7 @@ export default function HydrationMotionTest() {
           Hydration Test: motion driver
         </Text>
 
-        <Text fontSize="$3" color="$color11">
+        <Text fontSize="$3" color="$color11" data-testid={`hydrated-${didHydrate}`}>
           Hydrated: {String(didHydrate)}
         </Text>
 
