@@ -600,24 +600,21 @@ export const SheetImplementationCustom = React.forwardRef<View, SheetProps>(
       pauseKeyboardHandler,
     })
 
-    const handleAnimationViewLayout = React.useCallback(
-      (e: LayoutChangeEvent) => {
-        // FIX: Don't update frameSize during exit animation to prevent position jumps
-        if (!open && stableFrameSize.current !== 0) {
-          return
-        }
+    const handleAnimationViewLayout = useEvent((e: LayoutChangeEvent) => {
+      // don't update frameSize during exit animation to prevent position jumps
+      if (!open && stableFrameSize.current !== 0) {
+        return
+      }
 
-        // avoid bugs where it grows forever for whatever reason
-        // For inline mode (non-modal), don't cap at window height - use actual layout
-        const layoutHeight = e.nativeEvent?.layout.height
-        const next = modal
-          ? Math.min(layoutHeight, Dimensions.get(relativeDimensionTo).height)
-          : layoutHeight
-        if (!next) return
-        setFrameSize(next)
-      },
-      [open, modal]
-    )
+      // avoid bugs where it grows forever for whatever reason
+      // For inline mode (non-modal), don't cap at window height - use actual layout
+      const layoutHeight = e.nativeEvent?.layout.height
+      const next = modal
+        ? Math.min(layoutHeight, Dimensions.get(relativeDimensionTo).height)
+        : layoutHeight
+      if (!next) return
+      setFrameSize(next)
+    })
 
     const handleMaxContentViewLayout = React.useCallback((e: LayoutChangeEvent) => {
       // avoid bugs where it grows forever for whatever reason
