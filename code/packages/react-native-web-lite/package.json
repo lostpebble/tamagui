@@ -58,6 +58,12 @@
       "import": "./dist/esm/createReactDOMStyle.mjs",
       "require": "./dist/cjs/createReactDOMStyle.cjs"
     },
+    "./dist/exports/StyleSheet/preprocess": {
+      "browser": "./dist/esm/preprocess.mjs",
+      "module": "./dist/esm/preprocess.mjs",
+      "import": "./dist/esm/preprocess.mjs",
+      "require": "./dist/cjs/preprocess.cjs"
+    },
     "./dist/modules/*": {
       "browser": "./dist/esm/modules/*/index.mjs",
       "module": "./dist/esm/modules/*/index.mjs",

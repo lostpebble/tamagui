@@ -24,7 +24,10 @@ export { AccessibilityUtil } from './modules/AccessibilityUtil/index'
 export { canUseDOM } from './modules/canUseDOM'
 export { createDOMProps } from './modules/createDOMProps/index'
 export { stylesFromProps } from './modules/createDOMProps/index'
-export { createReactDOMStyle } from './StyleSheet/compiler/createReactDOMStyle'
+export {
+  createReactDOMStyle,
+  createTransformValue,
+} from './StyleSheet/compiler/createReactDOMStyle'
 export { createEventHandle } from './modules/createEventHandle/index'
 export { dismissKeyboard } from './modules/dismissKeyboard/index'
 export { getBoundingClientRect } from './modules/getBoundingClientRect/index'
