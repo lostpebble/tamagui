@@ -1,11 +1,18 @@
 import type { UserConfig } from 'vite'
 // TODO why is this not typing
 import { one } from 'one/vite'
-import { tamaguiPlugin } from '@tamagui/vite-plugin'
+import { tamaguiAliases, tamaguiPlugin } from '@tamagui/vite-plugin'
+
+const useRNWLite = !!process.env.USE_RNW_LITE
 
 // TODO this optimizeDeps/one.deps conf should be automatically done by one
 
 export default {
+  ...(useRNWLite && {
+    resolve: {
+      alias: tamaguiAliases({ rnwLite: true }),
+    },
+  }),
   ssr: {
     optimizeDeps: {
       include: [

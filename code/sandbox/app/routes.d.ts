@@ -18,6 +18,7 @@ declare module 'one' {
         | `/sub`
         | `/sub/portal-missing-styles`
         | `/test/rn-style-props`
+        | `/test/scrollview-hide-scrollbar`
       DynamicRoutes: 
         | `/bento/${OneRouter.SingleRoutePart<T>}`
         | `/test/${OneRouter.SingleRoutePart<T>}`
